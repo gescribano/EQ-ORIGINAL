@@ -32,9 +32,9 @@
         [self loadCategoryFamily:category];
         [self.initialCategories addObject:category];
         self.searchTerm = nil;
-        self.category1SelectedIndex = NSNotFound;
-        self.category2SelectedIndex = NSNotFound;
-        self.category3SelectedIndex = NSNotFound;
+        self.category1SelectedIndex = (int)NSNotFound;
+        self.category2SelectedIndex = (int)NSNotFound;
+        self.category3SelectedIndex = (int)NSNotFound;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activeClientChange:) name:ACTIVE_CLIENT_CHANGE_NOTIFICATION object:nil];
     }
     return self;
@@ -53,9 +53,9 @@
     self = [super init];
     if (self) {
         self.searchTerm = nil;
-        self.category1SelectedIndex = NSNotFound;
-        self.category2SelectedIndex = NSNotFound;
-        self.category3SelectedIndex = NSNotFound;
+        self.category1SelectedIndex = (int)NSNotFound;
+        self.category2SelectedIndex = (int)NSNotFound;
+        self.category3SelectedIndex = (int)NSNotFound;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(activeClientChange:) name:ACTIVE_CLIENT_CHANGE_NOTIFICATION object:nil];
     }
     return self;
@@ -85,38 +85,38 @@
     self.category1List = [adl objectListForClass:[Grupo class] filterByPredicate:categoryPredicate sortBy:[NSSortDescriptor sortDescriptorWithKey:@"nombre" ascending:YES] limit:0];
     if ([self.initialCategories count] >= 1) {
         Grupo *category = [self.initialCategories objectAtIndex:0];
-        self.category1SelectedIndex = [self.category1List indexOfObject:category];
+        self.category1SelectedIndex = (int)[self.category1List indexOfObject:category];
         [self.delegate changeCategory1Selected:category.nombre];
         [self.delegate changeCategory2Selected:nil];
         [self.delegate changeCategory3Selected:nil];
     }
     
-    if (self.category1SelectedIndex != NSNotFound) {
+    if (self.category1SelectedIndex != (int)NSNotFound) {
         Grupo *grupo = [self.category1List objectAtIndex:self.category1SelectedIndex];
         self.category2List = [[NSArray arrayWithArray:grupo.subGrupos] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"nombre" ascending:YES]]];
         if ([self.initialCategories count] >= 2) {
             Grupo *category = [self.initialCategories objectAtIndex:1];
             [self.delegate changeCategory2Selected:category.nombre];
             [self.delegate changeCategory3Selected:nil];
-            self.category2SelectedIndex = [self.category2List indexOfObject:category];
+            self.category2SelectedIndex = (int)[self.category2List indexOfObject:category];
             self.typeList = typeListGroup;
         }
     }
     
-    if (self.category2SelectedIndex != NSNotFound) {
+    if (self.category2SelectedIndex != (int)NSNotFound) {
         Grupo *grupo = [self.category2List objectAtIndex:self.category2SelectedIndex];
         self.category3List = [[NSArray arrayWithArray:grupo.subGrupos] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"nombre" ascending:YES]]];
         if ([self.initialCategories count] >= 3) {
             Grupo *category = [self.initialCategories objectAtIndex:1];
             [self.delegate changeCategory3Selected:category.nombre];
-            self.category3SelectedIndex = [self.category3List indexOfObject:category];
+            self.category3SelectedIndex = (int)[self.category3List indexOfObject:category];
             self.typeList = typeListProduct;
         }
     }
     
-    if (([self.category3List count] == 0 && self.category2SelectedIndex != NSNotFound) || self.category3SelectedIndex != NSNotFound) {
+    if (([self.category3List count] == 0 && self.category2SelectedIndex != (int)NSNotFound) || self.category3SelectedIndex != (int)NSNotFound) {
         Grupo *grupo = [self.category3List count] > 0 ? [self.category3List objectAtIndex:self.category3SelectedIndex] : [self.category2List objectAtIndex:self.category2SelectedIndex];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.grupoID == %@",grupo.identifier];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.grupoID == %@ && SELF.estado = 'publish'",grupo.identifier];
         [subPredicates addObject:predicate];
     }
 
@@ -128,7 +128,7 @@
 
 - (NSString *)imageForCategory2{
     Grupo *grupo = nil;
-    if (self.category2SelectedIndex != NSNotFound) {
+    if (self.category2SelectedIndex != (int)NSNotFound) {
         grupo = [self.category2List objectAtIndex:self.category2SelectedIndex];
     }else{
         grupo = [self.category1List objectAtIndex:self.category1SelectedIndex];
@@ -139,14 +139,14 @@
 
 - (void)defineSelectedCategory1:(int)categoryIndex{
     self.category1SelectedIndex = categoryIndex;
-    self.category2SelectedIndex = NSNotFound;
-    self.category3SelectedIndex = NSNotFound;
+    self.category2SelectedIndex = (int)NSNotFound;
+    self.category3SelectedIndex = (int)NSNotFound;
     self.typeList = typeListNone;
 }
 
 - (void)defineSelectedCategory2:(int)categoryIndex{
     self.category2SelectedIndex = categoryIndex;
-    self.category3SelectedIndex = NSNotFound;
+    self.category3SelectedIndex = (int)NSNotFound;
     self.typeList = typeListGroup;
 }
 
@@ -161,9 +161,9 @@
 
 - (void)resetFilters{
     self.searchTerm = nil;
-    self.category1SelectedIndex = NSNotFound;
-    self.category2SelectedIndex = NSNotFound;
-    self.category3SelectedIndex = NSNotFound;
+    self.category1SelectedIndex = (int)NSNotFound;
+    self.category2SelectedIndex = (int)NSNotFound;
+    self.category3SelectedIndex = (int)NSNotFound;
     self.category1List = nil;
     self.category2List = nil;
     self.category3List = nil;

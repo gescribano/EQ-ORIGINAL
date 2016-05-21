@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="zch-6i-HF4" customClass="EQSyncronizationTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="768" height="108"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zch-6i-HF4" id="gWP-0H-OMZ">
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eo9-0q-Hgu">
+                        <rect key="frame" x="54" y="21" width="46" height="22"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="##" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Ze-sD-Opf">
+                        <rect key="frame" x="110" y="22" width="21" height="21"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                        <color key="textColor" red="0.27450980392156865" green="0.27450980392156865" blue="0.27450980392156865" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R5c-bB-o05">
+                        <rect key="frame" x="556" y="63" width="166" height="29"/>
+                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="15"/>
+                        <inset key="titleEdgeInsets" minX="0.0" minY="0.0" maxX="0.0" maxY="2"/>
+                        <inset key="imageEdgeInsets" minX="-7" minY="1" maxX="0.0" maxY="0.0"/>
+                        <state key="normal" title="Sincronizar ahora" image="iconoSincronizar.png" backgroundImage="buttonFondoSincronizar.png">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="syncAction:" destination="zch-6i-HF4" eventType="touchUpInside" id="b2K-lW-G1t"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <color key="backgroundColor" red="0.93333333333333335" green="0.93725490196078431" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                <constraints>
+                    <constraint firstItem="R5c-bB-o05" firstAttribute="bottom" secondItem="gWP-0H-OMZ" secondAttribute="bottom" constant="-15" id="7oB-xw-Svl"/>
+                    <constraint firstItem="eo9-0q-Hgu" firstAttribute="baseline" secondItem="9Ze-sD-Opf" secondAttribute="baseline" id="bil-dq-jol"/>
+                    <constraint firstItem="9Ze-sD-Opf" firstAttribute="leading" secondItem="eo9-0q-Hgu" secondAttribute="trailing" constant="10" id="emG-Ng-h8q"/>
+                    <constraint firstItem="eo9-0q-Hgu" firstAttribute="leading" secondItem="gWP-0H-OMZ" secondAttribute="leadingMargin" constant="46" id="hcU-NK-ZiG"/>
+                    <constraint firstAttribute="trailing" secondItem="R5c-bB-o05" secondAttribute="trailing" constant="46" id="r0h-t2-a8n"/>
+                    <constraint firstAttribute="bottom" secondItem="eo9-0q-Hgu" secondAttribute="bottom" constant="64" id="zJr-c8-2RV"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="message" destination="9Ze-sD-Opf" id="0cX-bU-BWb"/>
+                <outlet property="syncButton" destination="R5c-bB-o05" id="8do-3c-RHo"/>
+                <outlet property="title" destination="eo9-0q-Hgu" id="oEE-NJ-ph5"/>
+            </connections>
+            <point key="canvasLocation" x="216.5" y="783"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="buttonFondoSincronizar.png" width="166" height="29"/>
+        <image name="iconoSincronizar.png" width="15" height="15"/>
+    </resources>
+</document>

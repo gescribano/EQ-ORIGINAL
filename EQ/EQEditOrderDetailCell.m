@@ -18,6 +18,7 @@
 
 @implementation EQEditOrderDetailCell
 
+
 - (void)loadItem:(ItemPedido *)item{
     self.item = item;
     self.codeLabel.text = item.articulo.codigo;

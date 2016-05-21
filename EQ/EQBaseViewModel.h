@@ -17,6 +17,10 @@
 
 - (NSString *)sellerName;
 - (NSString *)lastUpdateWithFormat;
+- (NSString*) lastUpdateCatalogWithFormat;
+-(NSString*) numberOfImagesToDownload;
+- (NSString *)initialDateImportWithFormat;
+- (NSString*) ventanaSincronizacion;
 - (NSString *)currentDateWithFormat;
 - (NSString *)activeClientName;
 - (NSString *)clientStatus;
@@ -41,5 +45,10 @@
 - (void)modelDidUpdateData;
 - (void)modelDidFinishWithError:(NSError *)error;
 - (void)modelWillStartDataLoading;
+
+//TESTPOL
+@optional
+- (void)modelDidUpdateData:(NSInteger)level recalculate:(BOOL)recalculate;
+
 
 @end

@@ -16,42 +16,56 @@
  successRequestBlock:(void(^)(NSArray* jsonArray))success
     failRequestBlock:(void(^)(NSError* error))fail
      runInBackground:(BOOL)runInBackground{
-    self = [super init];
-    if (self) {
-        NSURLRequest *url = [self generateRequestWithParameters:params];
-        self.urlRequest = url;
-        if (success == nil) {
-            self.successBlock = ^(NSArray* jsonArray){
-                NSLog(@"url: %@ result: %i", [[url URL] absoluteString], [jsonArray count]);
-            };
-            
-        } else{
-            self.successBlock = ^(NSArray* jsonArray){
-                if (runInBackground) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                        success(jsonArray);
-                    });
-                } else {
+    
+    
+    //Check if we have an object to submit request.
+    
+    NSMutableURLRequest *url = [[self generateRequestWithParameters:params] mutableCopy];
+    
+    NSLog(@"POST %@", url);
+    
+#ifdef TEST_VERSION
+    //Adding basic headers for stage server.
+    NSString *authStr = [NSString stringWithFormat:@"eq:eq"];
+    NSData *authData = [authStr dataUsingEncoding:NSASCIIStringEncoding];
+    NSString *authValue = [NSString stringWithFormat:@"Basic %@", [authData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]];
+    [url setValue:authValue forHTTPHeaderField:@"Authorization"];
+#endif
+    
+    self.urlRequest = url;
+    if (success == nil) {
+        self.successBlock = ^(NSArray* jsonArray){
+            NSLog(@"url: %@ result: %lu", [[url URL] absoluteString], (unsigned long)[jsonArray count]);
+        };
+        
+    } else{
+        self.successBlock = ^(NSArray* jsonArray){
+            if (runInBackground) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                     success(jsonArray);
-                }
-            };
-        }
-        
-        
-        if (fail == nil) {
-            self.failBlock = ^(NSError *error){
-                NSLog(@"EQRequest fail error:%@ UserInfo:%@",error ,error.userInfo);
-            };
-        } else {
-            self.failBlock = fail;
-        }
+                });
+            } else {
+                success(jsonArray);
+            }
+        };
+    }
+    
+    
+    if (fail == nil) {
+        self.failBlock = ^(NSError *error){
+            NSLog(@"EQRequest fail error:%@ UserInfo:%@",error ,error.userInfo);
+        };
+    } else {
+        self.failBlock = fail;
     }
     
     return self;
 }
 
--(NSURLRequest *)generateRequestWithParameters:(NSMutableDictionary *)params{
+-(NSURLRequest *)generateRequestWithParameters:(NSMutableDictionary *)params
+{
     NSMutableString *queryString = [NSMutableString stringWithFormat:@"%@?action=%@&object=%@&usuario=%@&password=%@",@API_URL,params[@"action"],params[@"object"],params[@"usuario"],params[@"password"]];
+        
     BOOL post = [params[@"POST"] boolValue];
     NSURLRequest *request = nil;
     [params removeObjectForKey:@"object"];

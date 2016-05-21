@@ -28,6 +28,18 @@
     [super viewWillAppear:animated];
     self.catalogDetailView.alpha = 0;
     [self.viewModel loadData];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(displayProgress:)
+                                                 name:CATALOG_DOWNLOAD_PROGRESS
+                                               object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    //TESTPOL
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad
@@ -38,6 +50,18 @@
     UINib *nib = [UINib nibWithNibName:@"EQProductCell" bundle: nil];
     [self.catalogsCollectionView registerNib:nib forCellWithReuseIdentifier:@"ProductCell"];
     [self.catalogScrollView setPagingEnabled:YES];
+    
+    
+}
+
+-(void) displayProgress:(NSNotification*)notification
+{
+    self.catalogDownloadProgressBar.hidden = NO;
+    NSDictionary* progressDictionary = [notification userInfo];
+    float total = [[progressDictionary objectForKey:@"total"] floatValue];
+    float progress = [[progressDictionary objectForKey:@"progress"] floatValue];
+    [self.catalogDownloadProgressBar setProgress:(progress / total)];
+    [self.catalogsCollectionView reloadData];
 }
 
 #pragma mark - UICollectionView Datasource
@@ -77,7 +101,7 @@
 - (void)loadCatalog:(Catalogo *)catalog {
     self.currentCatalog = catalog;
     self.catalogTitleLabel.text = [NSString stringWithFormat:@"Catálogo de %@", catalog.titulo];
-    int categoriesCount = [catalog.categorias count];
+    int categoriesCount = (int)[catalog.categorias count];
     [[self.catalogScrollView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     CGRect scrollFrame = self.catalogScrollView.frame;
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"pagina" ascending:YES];

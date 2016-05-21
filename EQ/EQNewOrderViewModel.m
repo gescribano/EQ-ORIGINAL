@@ -24,6 +24,9 @@
 @property (nonatomic,strong) NSSortDescriptor *sortArticle;
 @property (nonatomic,strong) NSSortDescriptor *sortGroup1;
 @property (nonatomic,strong) NSSortDescriptor *sortGroup2;
+@property (nonatomic,strong) NSArray* allCategories;
+@property (nonatomic,weak) ItemPedido* itemSelected;
+
 @end
 
 @implementation EQNewOrderViewModel
@@ -41,50 +44,86 @@
 - (id)init {
     self = [super init];
     if (self) {
-        self.order = (Pedido *)[[EQDataAccessLayer sharedInstance] createManagedObject:NSStringFromClass([Pedido class])];
-        self.order.clienteID = self.ActiveClient.identifier;
-        self.order.descuento3 = self.ActiveClient.descuento3;
-        self.order.descuento4 = self.ActiveClient.descuento4;
-        self.order.vendedorID = self.currentSeller.identifier;
-        [self initilize];
+            self.order = (Pedido *)[[EQDataAccessLayer sharedInstance] createManagedObject:NSStringFromClass([Pedido class])];
+            self.order.cliente = self.ActiveClient;
+            self.order.descuento3 = self.ActiveClient.descuento3;
+            self.order.descuento4 = self.ActiveClient.descuento4;
+            self.order.vendedorID = self.currentSeller.identifier;
+            [self initilize];
     }
     return self;
 }
 
+- (NSArray*) allCategories
+{
+    if (!_allCategories)
+    {
+        _allCategories = [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:nil];
+    }
+    return _allCategories;
+}
+
 - (void)initilize{
+    
+    [self.delegate modelWillStartDataLoading];
+
     self.undoManager = [[NSUndoManager alloc] init];
     [[self.order managedObjectContext] setUndoManager:self.undoManager];
     [self.undoManager beginUndoGrouping];
-    self.categories = [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:[NSPredicate predicateWithFormat:@"self.parentID == 0"]];
+    self.categories = [self.allCategories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"parentID == '0'"]];
     
     [self sortArticlesByIndex:0];
     [self sortGroup1ByIndex:0];
     [self sortGroup2ByIndex:0];
-    Grupo *defaultGroup = [self.categories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self.nombre like[cd] %@",DEFAULT_CATEGORY]][0];
-
-    self.categorySelected = [self.categories indexOfObject:defaultGroup];
-    self.group1 = [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:[NSPredicate predicateWithFormat:@"self.parentID == %@",defaultGroup.identifier]];
-    self.group1 = [self.group1 sortedArrayUsingDescriptors:@[self.sortGroup1]];
-    self.group1Selected = self.group2Selected = NSNotFound;
-    self.newOrder = YES;
-    [self.delegate modelDidUpdateData];
+    //POL
+    [self loadData:0];
+    self.categorySelected = (int)[self.categories indexOfObject:self.categories.lastObject];
+    [self defineSelectedCategory:self.categorySelected];
+    [self.delegate modelDidUpdateData:0 recalculate:NO];
+    
 }
 
-- (void)loadData{
-    [self.delegate modelWillStartDataLoading];
+//- (void)loadData{
+//    int level = 0;
+//    [self.delegate modelWillStartDataLoading];
+//    if (([self.group2 count] == 0 && self.group1Selected != NSNotFound) || self.group2Selected != NSNotFound) {
+//        Grupo *group = self.group2Selected != NSNotFound ? self.group2[self.group2Selected] : self.group1[self.group1Selected];
+//        self.articles = [group.articulos sortedArrayUsingDescriptors:@[self.sortArticle]];
+//    }
+//    if ([self.group1 count] > 0) {
+//        level = 1;
+//        self.group1 = [self.group1 sortedArrayUsingDescriptors:@[self.sortGroup1]];
+//    }
+//    if ([self.group2 count] > 0) {
+//        level = 2;
+//        self.group2 = [self.group2 sortedArrayUsingDescriptors:@[self.sortGroup2]];
+//    }
+//    
+////    [self.delegate modelDidUpdateData:level];
+//}
+
+
+- (void)loadData:(int) level{
+    
+//    [self.delegate modelWillStartDataLoading];
+    
     if (([self.group2 count] == 0 && self.group1Selected != NSNotFound) || self.group2Selected != NSNotFound) {
         Grupo *group = self.group2Selected != NSNotFound ? self.group2[self.group2Selected] : self.group1[self.group1Selected];
+        NSLog(@"articulos [%lu]", (unsigned long)[group.articulos count]);
         self.articles = [group.articulos sortedArrayUsingDescriptors:@[self.sortArticle]];
     }
-    if ([self.group1 count] > 0) {
+    if ([self.group1 count] > 0 && level <=0) {
         self.group1 = [self.group1 sortedArrayUsingDescriptors:@[self.sortGroup1]];
     }
-    if ([self.group2 count] > 0) {
+    if ([self.group2 count] > 0 && level <=1) {
         self.group2 = [self.group2 sortedArrayUsingDescriptors:@[self.sortGroup2]];
     }
     
-    [self.delegate modelDidUpdateData];
+//    [self.delegate modelDidUpdateData:level];
 }
+
+
+
 
 - (void)save{
     [self.undoManager endUndoGrouping];
@@ -95,12 +134,12 @@
     }
 
     if (self.newOrder) {
-        if ([self.order.estado length] == 0) {
+        if (!self.order.estado) {
             self.order.estado = @"pendiente";
         }
         
-        if (self.ActiveClient) {
-            self.order.clienteID = self.ActiveClient.identifier;
+        if (self.ActiveClient){
+            self.order.cliente = self.ActiveClient;
         }
     }
     
@@ -113,11 +152,17 @@
     [[EQSession sharedInstance] updateCache];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        [[EQDataManager sharedInstance] sendOrder:self.order];
+        [[EQDataManager sharedInstance] sendOrder:self.order success:^{
+            
+        } failure:^(NSError *error) {
+            
+        }];
     });
 }
 
-- (void)defineSelectedCategory:(int)index{
+- (void)defineSelectedCategory:(NSInteger)index{
+    [self.delegate modelWillStartDataLoading];
+
     self.categorySelected = index;
     self.group1Selected = self.group2Selected = NSNotFound;
     Grupo *grupo = self.categories[self.categorySelected];
@@ -126,10 +171,13 @@
     self.group2 = nil;
     self.articles = nil;
     self.articleSelected = nil;
-    [self.delegate modelDidUpdateData];
+    [self.delegate modelDidUpdateData:0 recalculate:NO];
 }
 
-- (void)defineSelectedGroup1:(int)index{
+- (void)defineSelectedGroup1:(NSInteger)index{
+
+    [self.delegate modelWillStartDataLoading];
+
     self.group1Selected = index;
     Grupo *grupo = self.group1[self.group1Selected];
     self.group2 = [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:[NSPredicate predicateWithFormat:@"self.parentID == %@",grupo.identifier]];
@@ -138,31 +186,66 @@
     self.articles = nil;
     self.articleSelected = nil;
     if ([self.group2 count] == 0) {
-        [self loadData];
-    } else{
-        [self.delegate modelDidUpdateData];
+        [self loadData:1];
+//  } else{
     }
+    
+    [self.delegate modelDidUpdateData:1 recalculate:NO];
+
 }
 
-- (void)defineSelectedGroup2:(int)index{
+- (void)defineSelectedGroup2:(NSInteger)index{
+    
+    [self.delegate modelWillStartDataLoading];
+
     self.group2Selected = index;
     self.articleSelected = nil;
     self.articleSelectedIndex = NSNotFound;
-    [self loadData];
+    [self loadData:2];
+    [self.delegate modelDidUpdateData:2 recalculate:NO];
+
 }
 
-- (void)defineSelectedArticle:(int)index{
+//- (void)defineSelectedArticle:(NSInteger)index{
+//    Articulo *article = [self.articles objectAtIndex:index];
+//    if ([self canAddArticle:article]) {
+//        self.articleSelected = article;
+//        self.articleSelectedIndex = index;
+//        
+//        [self.delegate modelDidUpdateData:2];
+//    } else {
+//        [self.delegate articleUnavailable];
+//    }
+//}
+
+
+//POLX
+
+- (void)defineSelectedArticle:(NSInteger)index{
     Articulo *article = [self.articles objectAtIndex:index];
+    self.itemSelected = nil;
+
     if ([self canAddArticle:article]) {
         self.articleSelected = article;
         self.articleSelectedIndex = index;
-        [self.delegate modelDidUpdateData];
+        
+        for (ItemPedido *item in self.order.items) {
+            if ([item.articulo.identifier isEqualToString:self.articleSelected.identifier]) {
+                self.itemSelected = item;
+                break;
+            }
+        }
+
+        [self.delegate modelDidUpdateData:2 recalculate:NO];
     } else {
         [self.delegate articleUnavailable];
     }
 }
 
-- (void)defineOrderStatus:(int)index{
+
+
+
+- (void)defineOrderStatus:(NSInteger)index{
     if (index == 0) {
         self.order.estado = @"presupuestado";
     } else {
@@ -170,26 +253,64 @@
     }
 }
 
+//- (void)AddQuantity:(int)quantity canAdd:(BOOL)canAdd {
+//    if (canAdd) {
+//        BOOL existItem = NO;
+//        for (ItemPedido *item in self.order.items) {
+//            if ([item.articulo.identifier isEqualToString:self.articleSelected.identifier]) {
+//                existItem = YES;
+//                item.cantidad = [NSNumber numberWithInt:quantity];
+//                //POL
+//                [self.delegate modelDidUpdateItem:item.orden.integerValue-1];
+//                return;
+//            }
+//        }
+//        
+//        if (!existItem) {
+//            EQDataAccessLayer * DAL = [EQDataAccessLayer sharedInstance];
+//            ItemPedido *item = (ItemPedido *)[DAL createManagedObject:@"ItemPedido"];
+//            item.articuloID = self.articleSelected.identifier;
+//            item.cantidad = [NSNumber numberWithInt:quantity];
+//            [self.order addItemsObject:item];
+//            item.orden = @([self.order.items count]);
+//            //POL
+//            [self.delegate modelDidAddItem:item.orden.integerValue-1];
+//        }
+//        
+//        
+//    } else {
+//        [self.delegate modelAddItemDidFail];
+//    }
+//}
+
+
+//POLX
 - (void)AddQuantity:(int)quantity canAdd:(BOOL)canAdd {
     if (canAdd) {
-        BOOL existItem = NO;
-        EQDataAccessLayer * DAL = [EQDataAccessLayer sharedInstance];
-        for (ItemPedido *item in self.order.items) {
-            if ([item.articulo.identifier isEqualToString:self.articleSelected.identifier]) {
-                existItem = YES;
-                item.cantidad = [NSNumber numberWithInt:quantity];
+        if (self.itemSelected!=nil) {
+            self.itemSelected.cantidad = [NSNumber numberWithInt:quantity];
+            
+            NSArray *allItems = [self items];
+            int itemIndex = -1;
+            for (int i = 0; i<[allItems count]; i++) {
+                if ([((ItemPedido *) allItems[i]).articuloID isEqualToString:self.itemSelected.articuloID]) {
+                    itemIndex = i;
+                    break;
+                }
             }
-        }
-        
-        if (!existItem) {
+            [self.delegate modelDidUpdateItem:itemIndex];
+        } else {
+            EQDataAccessLayer * DAL = [EQDataAccessLayer sharedInstance];
             ItemPedido *item = (ItemPedido *)[DAL createManagedObject:@"ItemPedido"];
             item.articuloID = self.articleSelected.identifier;
             item.cantidad = [NSNumber numberWithInt:quantity];
             [self.order addItemsObject:item];
             item.orden = @([self.order.items count]);
+            self.itemSelected = item;
+            //NSLog(@"[%ld]", (long)item.orden.integerValue);
+            [self.delegate modelDidAddItem:item.orden.integerValue-1];
+            
         }
-        
-        [self.delegate modelDidAddItem];
     } else {
         [self.delegate modelAddItemDidFail];
     }
@@ -252,9 +373,25 @@
     return self.order.fecha ? self.order.fecha : [NSDate date];
 }
 
-- (void)removeItem:(ItemPedido *)item{
-    [self.order removeItemsObject:item];
-    [self loadData];
+- (void)removeItem:(ItemPedido *)itemToRemove{
+    [self.delegate modelWillStartDataLoading];
+    self.itemSelected = nil;
+    
+    NSArray *allItems = [self items];
+    int itemIndex = -1;
+    for (int i = 0; i<[allItems count]; i++) {
+        ItemPedido *item = (ItemPedido *) allItems[i];
+        item.orden = [NSNumber numberWithInt:i + 1];
+        if ([item.articuloID isEqualToString:itemToRemove.articuloID]) {
+            itemIndex = i;
+        }
+    }
+    
+    if (itemIndex > -1) {
+        [self.order removeItemsObject:itemToRemove];
+        [self.delegate modelDidRemoveItem:itemIndex];
+    }
+    
 }
 
 - (void)editItem:(ItemPedido *)item{
@@ -270,7 +407,7 @@
     }
     
     if (g3) {
-        int index = [self.categories indexOfObject:g3];
+        NSInteger index = [self.categories indexOfObject:g3];
         [self defineSelectedCategory:index];
         
         index = [self.group1 indexOfObject:g2];
@@ -282,7 +419,7 @@
         index = [self.articles indexOfObject:item.articulo];
         [self defineSelectedArticle:index];
     } else {
-        int index = [self.categories indexOfObject:g2];
+        NSInteger index = [self.categories indexOfObject:g2];
         [self defineSelectedCategory:index];
         
         index = [self.group1 indexOfObject:g1];
@@ -311,22 +448,26 @@
 
 - (void)sortArticlesByIndex:(int)index{
     self.sortArticle = [NSSortDescriptor sortDescriptorWithKey:index == 0 ? @"codigo" : @"nombre" ascending:YES];
-    [self loadData];
+    //POL
+    //[self loadData];
 }
 
 - (void)sortGroup2ByIndex:(int)index{
     self.sortGroup2 = [NSSortDescriptor sortDescriptorWithKey:index == 0 ? @"relevancia" : @"nombre" ascending:index == 1];
-    [self loadData];
+    //POL
+    //[self loadData];
 }
 
 - (void)sortGroup1ByIndex:(int)index{
     self.sortGroup1 = [NSSortDescriptor sortDescriptorWithKey:index == 0 ? @"relevancia" : @"nombre" ascending:index == 1];
-    [self loadData];
+    //POL
+    //[self loadData];
 }
 
 - (BOOL)canAddArticle:(Articulo *)article{
     Cliente *client = self.ActiveClient;
-    if (!self.newOrder) {
+    if (!self.newOrder)
+    {
         client = self.order.cliente;
     }
     

@@ -7,18 +7,23 @@
 //
 
 #import "EQOrdersViewController.h"
-#import "EQNewOrderViewController.h"
+
+//AAA#import "EQNewOrderViewController.h"
+#import "EQNewLightOrderViewController.h"
+
 #import "EQOrdersViewModel.h"
 #import "UIColor+EQ.h"
 #import "NSNumber+EQ.h"
+#import "EQDataManager.h"
 
 #define cellIdentifier @"OrderCell"
 
-@interface EQOrdersViewController ()
+@interface EQOrdersViewController ()<UIAlertViewDelegate>
 
 @property (nonatomic, strong) EQOrdersViewModel *viewModel;
 @property (nonatomic, assign) bool viewLoaded;
 @property (nonatomic, strong) UIAlertView *cancelOrderAlert;
+@property (nonatomic, strong) UIAlertView *reloadArticuleData;
 @property (nonatomic, strong) Pedido *orderCancelled;
 
 @end
@@ -30,19 +35,19 @@
     self.viewModel.delegate = self;
     UINib *nib = [UINib nibWithNibName:@"EQOrderCell" bundle: nil];
     [self.ordersTable registerNib:nib forCellReuseIdentifier:cellIdentifier];
-    
     [super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    if (self.viewModel.clientName) {
+    if (self.viewModel.clientName)
+    {
         [self.clientFilterButton setTitle:self.viewModel.clientName forState:UIControlStateNormal];
     }
-    if (!self.viewLoaded) {
+    if (!self.viewLoaded)
+    {
         [self.viewModel loadData];
     }
-    
     self.viewLoaded = YES;
 }
 
@@ -59,7 +64,28 @@
 
 - (IBAction)newOrderButtonAction:(id)sender {
     if ([self.viewModel canCreateOrder]) {
-        [self.navigationController pushViewController:[EQNewOrderViewController new] animated:YES];
+        [[EQDataManager sharedInstance] checkIfArticlesDataNeedRefreshWithSuccess:^(BOOL needUpdate) {
+            [APP_DELEGATE hideLoadingView];
+            if (needUpdate) {
+                self.reloadArticuleData = [[UIAlertView alloc] initWithTitle:@"Atención"
+                                                                     message:@"Hubieron cambios en los productos, Por favor, considere sincronizar ahora."
+                                                                    delegate:self
+                                                           cancelButtonTitle:@"Posponer"
+                                                           otherButtonTitles:@"Ok",nil];
+                [self.reloadArticuleData show];
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //AAA [self.navigationController pushViewController:[EQNewOrderViewController new] animated:YES];
+                    [self.navigationController pushViewController:[EQNewLightOrderViewController new] animated:YES];
+                });
+            }
+        } failure:^(NSError *error) {
+            [APP_DELEGATE hideLoadingView];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                //AAA [self.navigationController pushViewController:[EQNewOrderViewController new] animated:YES];
+                [self.navigationController pushViewController:[EQNewLightOrderViewController new] animated:YES];
+            });
+        }];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"Para crear un pedido debe tener un cliente seleccionado y este debe tener una lista de precios." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
@@ -113,7 +139,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     EQOrderCell *cell = (EQOrderCell *)[tableView cellForRowAtIndexPath:indexPath];
-    EQNewOrderViewController *newOrderController = [[EQNewOrderViewController alloc] initWithOrder:cell.pedido];
+    EQNewLightOrderViewController *newOrderController = [[EQNewLightOrderViewController alloc] initWithOrder:cell.pedido];
     [newOrderController disableInteraction];
     [self.navigationController pushViewController:newOrderController animated:YES];
 }
@@ -123,15 +149,15 @@
 }
 
 - (void)editOrder:(Pedido *)order{
-    EQNewOrderViewController *newOrderController = [[EQNewOrderViewController alloc] initWithOrder:order];
+    EQNewLightOrderViewController *newOrderController = [[EQNewLightOrderViewController alloc] initWithOrder:order];
     [self.navigationController pushViewController:newOrderController animated:YES];
 }
 
 - (void)copyOrder:(Pedido *)order{
     if ([self.viewModel canCreateOrder]) {
         Pedido *newOrder = [order copy];
-        newOrder.clienteID = self.viewModel.ActiveClient.identifier;
-        EQNewOrderViewController *newOrderController = [[EQNewOrderViewController alloc] initWithClonedOrder:newOrder];
+        newOrder.cliente = self.viewModel.ActiveClient;
+        EQNewLightOrderViewController *newOrderController = [[EQNewLightOrderViewController alloc] initWithClonedOrder:newOrder];
         [self.navigationController pushViewController:newOrderController animated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:@"Para crear un pedido debe tener un cliente seleccionado." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -141,7 +167,7 @@
 
 - (void)cancelOrder:(Pedido *)pedido{
     self.orderCancelled = pedido;
-     self.cancelOrderAlert = [[UIAlertView alloc] initWithTitle:nil message:@"¿Esta seguro de eliminar el pedido?." delegate:self cancelButtonTitle:@"Cancelar" otherButtonTitles:@"Eliminar pedido",nil];
+    self.cancelOrderAlert = [[UIAlertView alloc] initWithTitle:nil message:@"¿Esta seguro de eliminar el pedido?." delegate:self cancelButtonTitle:@"Cancelar" otherButtonTitles:@"Eliminar pedido",nil];
     [self.cancelOrderAlert show];
 }
 
@@ -151,7 +177,33 @@
         if (buttonIndex != alertView.cancelButtonIndex) {
             [self.viewModel cancelOrder:self.orderCancelled];
         }
+    } else if ([self.reloadArticuleData isEqual:alertView])
+    {
+        if (buttonIndex != alertView.cancelButtonIndex)
+        {
+            [[EQDataManager sharedInstance] updateProductsSuccess:^
+             {
+                 [self modelDidUpdateData];
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     [self.navigationController pushViewController:[EQNewLightOrderViewController new] animated:YES];
+                 });
+             }
+                                                          failure:^(NSError *error)
+             {
+                 UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"ERROR"
+                                                                 message:@"Ocurrió un error durante la actualización"
+                                                                delegate:nil
+                                                       cancelButtonTitle:@"OK"
+                                                       otherButtonTitles:nil, nil];
+                 [alert show];
+             }];
+        }
+        else
+        {
+            [self.navigationController pushViewController:[EQNewLightOrderViewController new] animated:YES];
+        }
     }
+    
 }
 
 - (void)tablePopover:(EQTablePopover *)sender selectedRow:(int)rowNumber selectedData:(NSString *)selectedData{

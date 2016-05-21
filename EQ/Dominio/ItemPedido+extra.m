@@ -13,11 +13,12 @@
 #import "Articulo+extra.h"
 #import "EQDataAccessLayer.h"
 #import "Pedido+extra.h"
+#import "ItemFacturado.h"
 
 @implementation ItemPedido (extra)
 
 @dynamic articulos;
-@dynamic facturados;
+@dynamic itemsFacturados;
 
 - (CGFloat)totalConDescuento{
     CGFloat total = [[self.articulo priceForClient:self.pedido.cliente] priceForClient:self.pedido.cliente] * [self.cantidad intValue];
@@ -29,7 +30,8 @@
     return total;
 }
 
-- (Articulo *)articulo{
+- (Articulo *)articulo
+{
     return [self.articulos firstObject];
 }
 
@@ -64,6 +66,19 @@
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"Pedido:%@ Articulo:%@ Cantidad:%@ Orden:%@",self.pedido.identifier, self.articuloID, self.cantidad, self.orden];
+}
+
+- (NSArray *)articulos
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.articuloID];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Articulo class] filterByPredicate:predicate];
+}
+
+- (NSArray *)itemsFacturados
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"itemId == %@",self.identifier];
+    NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"itemId" ascending:NO];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[ItemFacturado class] filterByPredicate:predicate sortBy:sort limit:0];
 }
 
 @end

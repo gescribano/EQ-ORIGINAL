@@ -77,7 +77,7 @@
     cell.addressLabel.text = cliente.domicilio;
     cell.localityLabel.text = cliente.localidad;
     cell.phoneLabel.text = cliente.telefono;
-    cell.clientID = cliente.identifier;
+    cell.client = cliente;
     [cell hasEmail:[cliente.mail length] > 0];
     cell.delegate = self;
     cell.contentView.backgroundColor = indexPath.row % 2 == 0 ? [UIColor grayForCell] : [UIColor whiteColor];
@@ -108,15 +108,15 @@
     [self.viewModel performSelector:@selector(loadData) withObject:nil afterDelay:.8];
 }
 
-- (void)editClientWithID:(NSNumber *)clientID{
-    self.createClient = [[EQCreateClientViewController alloc] initWithClientId:clientID];
+- (void)editClient:(Cliente *)client{
+    self.createClient = [[EQCreateClientViewController alloc] initWithClient:client];
     self.createClient.delegate = self;
     [self presentViewController:self.createClient animated:YES completion:nil];
 }
 
-- (void)mailToClientWithID:(NSString *)clientID{
+- (void)mailToClient:(Cliente *)cliente
+{
     if ([MFMailComposeViewController canSendMail]){
-        Cliente *cliente = [self.viewModel clientById:clientID];
         MFMailComposeViewController *compose = [[MFMailComposeViewController alloc] init];
         [compose setToRecipients:[NSArray arrayWithObject:cliente.mail]];
         compose.mailComposeDelegate = self;
@@ -135,7 +135,7 @@
 }
 
 - (void)createClientCancelled{
-     [self.createClient dismissViewControllerAnimated:YES completion:nil];
+    [self.createClient dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)clientSaved{

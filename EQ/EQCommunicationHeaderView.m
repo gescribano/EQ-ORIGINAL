@@ -31,7 +31,7 @@
     self.dateLabel.text = [dateFormatter stringFromDate:communication.creado];
     self.endedImage.hidden = [communication.activo boolValue];
     self.communicationsQuantity.hidden = YES;
-    int quantity = [communications count];
+    int quantity = (int)[communications count];
     if (quantity > 1) {
         self.communicationsQuantity.text = [NSString stringWithFormat:@"%i",quantity];
         self.communicationsQuantity.hidden = NO;

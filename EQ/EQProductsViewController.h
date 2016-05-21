@@ -26,4 +26,6 @@
 @property (strong, nonatomic) IBOutlet EQTransparentBackgroundSearchBar *searchBar;
 @property (strong, nonatomic) IBOutlet EQProductDetailView *productDetailView;
 
+@property (weak, nonatomic) IBOutlet UIProgressView *productDownloadProgressBar;
+
 @end

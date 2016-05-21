@@ -13,7 +13,6 @@
 
 @interface EQSession()
 
-@property (strong, nonatomic) NSTimer *updateTimer;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 @property (strong, nonatomic) CLLocation *currentLocation;
 
@@ -49,7 +48,7 @@
     CLLocation* location = [locations lastObject];
     NSDate* eventDate = location.timestamp;
     NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
-    if (abs(howRecent) < 45.0) {
+    if (fabs(howRecent) < 45.0) {
         // If the event is recent, do something with it.
         self.currentLocation = location;
     }
@@ -57,11 +56,11 @@
 
 - (void)locationManager:(CLLocationManager *)manager
        didFailWithError:(NSError *)error{
-    NSLog(@"%@", error.localizedDescription);
+    NSLog(@"locationManager error[%@]", error.localizedDescription);
 }
 
 - (void)updateData{
-    [[EQDataManager sharedInstance] updateDataShowLoading:NO];
+    [[EQDataManager sharedInstance] updateDataShowLoading:YES];
 }
 
 - (NSNumber *)currentLongitude{
@@ -72,22 +71,41 @@
     return [NSNumber numberWithDouble:self.currentLocation.coordinate.latitude];
 }
 
-- (void)regiteredUser:(Usuario *)user{
-    self.user = user;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:user.identifier forKey:@"loggedUser"];
-    [defaults synchronize];
-    [self initializeDataSynchronization];
+- (void)regiteredUser:(Usuario *)user
+{
+    [self setUser:user];
+    
+    if ([self checkIfIncrementalSyncIsNeeded])
+    {
+        [self initializeDataSynchronization];
+    };
+}
+
+
+
+- (BOOL) isFirstSync
+{
+    return ![EQSession sharedInstance].lastSyncDate;
+}
+
+- (BOOL) checkIfIncrementalSyncIsNeeded
+{
+    
+    BOOL isAlreadySyncing = [EQDataManager sharedInstance].running;
+    BOOL isTheFirstSync = [self isFirstSync];
+    BOOL dataExpired = [[NSDate date] timeIntervalSinceDate:[EQSession sharedInstance].lastSyncDate] > kMaxNumberOfDaysWithoutUpdate*24*60*60;
+    BOOL isLoggedIn = [self isUserLogged];
+    
+    //El usuario esta loggeado, a aplicacion no esta siendo sincronizanada, es la primera vez o los datos han expirado
+    return (isLoggedIn && !isAlreadySyncing &&(isTheFirstSync || dataExpired));
 }
 
 - (void)initializeDataSynchronization{
-    self.updateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:(MAXIMUM_MINUTES_TO_UPDATE * 60)] interval:(MAXIMUM_MINUTES_TO_UPDATE * 60) target:self selector:@selector(updateData) userInfo:nil repeats:YES];
-    NSRunLoop *runner = [NSRunLoop currentRunLoop];
-    [runner addTimer:self.updateTimer forMode: NSDefaultRunLoopMode];
     [self forceSynchronization];
 }
 
-- (void)forceSynchronization{
+- (void)forceSynchronization
+{
     [[EQDataManager sharedInstance] updateDataShowLoading:YES];
 }
 
@@ -97,7 +115,6 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:@"loggedUser"];
     [defaults synchronize];
-    [self.updateTimer invalidate];
 }
 
 - (NSDate *)lastSyncDate{
@@ -112,37 +129,66 @@
     [[EQDataManager sharedInstance] sendPendingData];
 }
 
-- (BOOL)isUserLogged{
+- (BOOL)isUserLogged
+{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *userID = [defaults objectForKey:@"loggedUser"];
     if (userID && !self.user) {
         EQDataAccessLayer *adl = [EQDataAccessLayer sharedInstance];
-        [self regiteredUser:(Usuario *)[adl objectForClass:[Usuario class] withId:userID]];
+        [adl.mainManagedObjectContext performBlock:^{
+            [self regiteredUser:(Usuario *)[adl objectForClass:[Usuario class] withId:userID]];
+        }];
     }
-    
     return userID != nil;
 }
 
-- (void)setSelectedClient:(Cliente *)selectedClient{
-    [Grupo resetRelevancia];
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    
-    if (selectedClient) {
-        [selectedClient calcularRelevancia];
-        [userInfo setObject:selectedClient forKey:@"activeClient"];
+- (Usuario *)user
+{
+    EQDataAccessLayer *adl = [EQDataAccessLayer sharedInstance];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *userID = [defaults objectForKey:@"loggedUser"];
+    Usuario* usuario;
+    if (userID)
+    {
+        usuario = (Usuario *)[adl objectForClass:[Usuario class] withId:userID];
     }
+    return usuario;
+}
+
+- (void)setUser:(Usuario *)user
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:user.identifier forKey:@"loggedUser"];
+    [defaults synchronize];
+}
+
+- (void)setSelectedClient:(Cliente *)selectedClient
+{
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _selectedClient = [[EQDataAccessLayer sharedInstance] objectForClass:[Cliente class] withPredicate:[NSPredicate predicateWithFormat:@"identifier == %@",selectedClient.identifier]];
-        [[NSNotificationCenter defaultCenter] postNotificationName:ACTIVE_CLIENT_CHANGE_NOTIFICATION object:nil userInfo:userInfo];
-    });
+    dispatch_async(dispatch_get_main_queue(), ^
+                   {
+                       [Grupo resetRelevancia];
+                       NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+                       if (selectedClient) {
+                           [selectedClient calcularRelevancia];
+                           [userInfo setObject:selectedClient forKey:@"activeClient"];
+                           EQDataAccessLayer *adl = [EQDataAccessLayer sharedInstance];
+                           _selectedClient = (Cliente *)[adl.mainManagedObjectContext objectWithID:selectedClient.objectID];
+                       }
+                       else
+                       {
+                           _selectedClient = nil;
+                       }
+                       
+                       [[NSNotificationCenter defaultCenter] postNotificationName:ACTIVE_CLIENT_CHANGE_NOTIFICATION object:nil userInfo:userInfo];
+                   });
 }
 
 - (void)updateCache{
     if ([NSThread isMainThread]) {
-        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.selectedClient mergeChanges:YES];
-        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.user mergeChanges:YES];
-        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.user.vendedor mergeChanges:YES];
+        //        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.selectedClient mergeChanges:YES];
+        //        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.user mergeChanges:YES];
+        //        [[EQDataAccessLayer sharedInstance].managedObjectContext refreshObject:self.user.vendedor mergeChanges:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:DATA_UPDATED_NOTIFICATION object:nil];
     } else {
         [self performSelectorOnMainThread:@selector(updateCache) withObject:nil waitUntilDone:NO];

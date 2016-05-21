@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -11,13 +13,36 @@
             <rect key="frame" x="0.0" y="0.0" width="768" height="50"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="fondoSolapas.png" id="3">
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" image="fondoSolapas.png" translatesAutoresizingMaskIntoConstraints="NO" id="3">
                     <rect key="frame" x="0.0" y="0.0" width="768" height="50"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <animations/>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="29">
-                    <rect key="frame" x="92" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S07-wt-MoP">
+                    <rect key="frame" x="20" y="0.0" width="0.0" height="50"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="vSf-nb-bwn"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" tag="-1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nxi-gQ-kWF">
+                    <rect key="frame" x="12" y="5" width="66" height="41"/>
+                    <animations/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
+                    <state key="normal" backgroundImage="buttonSolapasInicio.png">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected" backgroundImage="buttonSolapasConfiguracionHighlighted.png"/>
+                    <state key="highlighted" backgroundImage="buttonSolapasInicioHighlighted.png">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="touchButton:" destination="2" eventType="touchUpInside" id="YyV-Wd-q3X"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="29">
+                    <rect key="frame" x="83" y="0.0" width="75" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasPedidos.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -31,9 +56,9 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="30"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="31">
-                    <rect key="frame" x="167" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="31">
+                    <rect key="frame" x="158" y="0.0" width="76" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasCuentaCorriente.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -47,9 +72,9 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="32"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4">
-                    <rect key="frame" x="242" y="1" width="73" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4">
+                    <rect key="frame" x="233" y="0.0" width="75" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasInformacionDeVentas.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -63,9 +88,9 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="16"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="5">
-                    <rect key="frame" x="315" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                    <rect key="frame" x="308" y="0.0" width="76" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasComunicacion.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -79,9 +104,9 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="17"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="27">
-                    <rect key="frame" x="390" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27">
+                    <rect key="frame" x="384" y="0.0" width="76" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasObjetivos.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -95,9 +120,9 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="28"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="25">
-                    <rect key="frame" x="465" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="25">
+                    <rect key="frame" x="459" y="0.0" width="75" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" image="buttonSolapasProductos.png">
                         <color key="titleColor" red="0.75686274509999996" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -111,28 +136,12 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="26"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="23">
-                    <rect key="frame" x="540" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
-                    <state key="normal" backgroundImage="buttonSolapasClientes.png">
-                        <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <state key="selected" image="buttonSolapasClientesHighlighted.png"/>
-                    <state key="highlighted" image="buttonSolapasClientesHighlighted.png">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                    <connections>
-                        <action selector="touchButton:" destination="2" eventType="touchUpInside" id="24"/>
-                    </connections>
-                </button>
-                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="rjY-cG-fcd">
-                    <rect key="frame" x="615" y="1" width="75" height="50"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <button opaque="NO" tag="7" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rjY-cG-fcd">
+                    <rect key="frame" x="610" y="0.0" width="75" height="50"/>
+                    <animations/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
                     <state key="normal" backgroundImage="buttonSolapasCatalogo.png">
-                        <color key="titleColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <state key="selected" image="buttonSolapasCatalogoHighlighted.png"/>
@@ -143,9 +152,90 @@
                         <action selector="touchButton:" destination="2" eventType="touchUpInside" id="P3T-Dd-RXW"/>
                     </connections>
                 </button>
+                <button opaque="NO" tag="8" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0f4-8m-4bj">
+                    <rect key="frame" x="685" y="0.0" width="76" height="50"/>
+                    <animations/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
+                    <state key="normal" backgroundImage="buttonSolapasConfiguracion.png">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected" backgroundImage="buttonSolapasConfiguracionHighlighted.png"/>
+                    <state key="highlighted" backgroundImage="buttonSolapasConfiguracionHighlighted.png">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="touchButton:" destination="2" eventType="touchUpInside" id="7jP-gd-VZL"/>
+                    </connections>
+                </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hB7-vP-UmP">
+                    <rect key="frame" x="768" y="0.0" width="0.0" height="50"/>
+                    <animations/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="rUK-2k-5Sa"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" tag="6" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="23">
+                    <rect key="frame" x="534" y="0.0" width="76" height="50"/>
+                    <animations/>
+                    <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="36"/>
+                    <state key="normal" backgroundImage="buttonSolapasClientes.png">
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <state key="selected" image="buttonSolapasClientesHighlighted.png"/>
+                    <state key="highlighted" image="buttonSolapasClientesHighlighted.png">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="touchButton:" destination="2" eventType="touchUpInside" id="24"/>
+                    </connections>
+                </button>
             </subviews>
+            <animations/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="29" firstAttribute="width" secondItem="27" secondAttribute="width" id="1qD-GG-6Uk"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="31" secondAttribute="centerY" id="1zB-rN-ct9"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="5" secondAttribute="width" id="2qJ-YB-8R4"/>
+                <constraint firstItem="nxi-gQ-kWF" firstAttribute="leadingMargin" secondItem="S07-wt-MoP" secondAttribute="trailing" id="4VK-Nm-5Bx"/>
+                <constraint firstItem="31" firstAttribute="leading" secondItem="29" secondAttribute="trailing" id="8ag-pn-Yq5"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="27" secondAttribute="centerY" id="8hi-p0-zxF"/>
+                <constraint firstItem="29" firstAttribute="leading" secondItem="nxi-gQ-kWF" secondAttribute="trailing" constant="5" id="EwR-GZ-Gkr"/>
+                <constraint firstItem="23" firstAttribute="leading" secondItem="25" secondAttribute="trailing" id="FuD-iH-owt"/>
+                <constraint firstItem="S07-wt-MoP" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="20" symbolic="YES" id="GG4-tE-Eln"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="0f4-8m-4bj" secondAttribute="centerY" id="JbU-Jb-zsP"/>
+                <constraint firstItem="hB7-vP-UmP" firstAttribute="centerY" secondItem="S07-wt-MoP" secondAttribute="centerY" id="MjC-45-2qE"/>
+                <constraint firstItem="S07-wt-MoP" firstAttribute="top" secondItem="2" secondAttribute="top" id="NKZ-4B-VVH"/>
+                <constraint firstItem="hB7-vP-UmP" firstAttribute="top" secondItem="2" secondAttribute="top" id="RKz-6P-JRy"/>
+                <constraint firstItem="nxi-gQ-kWF" firstAttribute="centerY" secondItem="29" secondAttribute="centerY" id="SVV-1F-8uz"/>
+                <constraint firstItem="hB7-vP-UmP" firstAttribute="width" secondItem="S07-wt-MoP" secondAttribute="width" id="Shp-wB-sqa"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="31" secondAttribute="width" id="SxR-VY-78l"/>
+                <constraint firstItem="4" firstAttribute="leading" secondItem="31" secondAttribute="trailing" id="WGV-XF-9aF"/>
+                <constraint firstItem="S07-wt-MoP" firstAttribute="centerY" secondItem="29" secondAttribute="centerY" id="Xci-a3-Gfu"/>
+                <constraint firstItem="nxi-gQ-kWF" firstAttribute="width" secondItem="29" secondAttribute="width" constant="-10" id="YbC-9n-mCr"/>
+                <constraint firstItem="hB7-vP-UmP" firstAttribute="leading" secondItem="0f4-8m-4bj" secondAttribute="trailing" constant="8" symbolic="YES" id="YzU-TR-JFm"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="rjY-cG-fcd" secondAttribute="width" id="cTC-MS-1b6"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="4" secondAttribute="centerY" id="eLy-bG-eQr"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="25" secondAttribute="centerY" id="fs6-31-Jk2"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="25" secondAttribute="width" id="hbC-BC-fco"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="23" secondAttribute="width" id="iKT-Ez-QBX"/>
+                <constraint firstAttribute="trailing" secondItem="hB7-vP-UmP" secondAttribute="trailing" id="ijp-N8-cIK"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="4" secondAttribute="trailing" id="jm5-0k-blf"/>
+                <constraint firstItem="27" firstAttribute="leading" secondItem="5" secondAttribute="trailing" id="kk4-1g-8zl"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="23" secondAttribute="centerY" id="lBC-fg-HXU"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="0f4-8m-4bj" secondAttribute="width" id="lzN-3z-lkf"/>
+                <constraint firstItem="29" firstAttribute="width" secondItem="4" secondAttribute="width" id="pd4-Fr-pQY"/>
+                <constraint firstItem="rjY-cG-fcd" firstAttribute="leading" secondItem="23" secondAttribute="trailing" id="qgp-qo-sNO"/>
+                <constraint firstItem="29" firstAttribute="top" secondItem="2" secondAttribute="top" id="rGm-7X-Pb9"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="5" secondAttribute="centerY" id="uPo-ip-Vkq"/>
+                <constraint firstItem="29" firstAttribute="centerY" secondItem="rjY-cG-fcd" secondAttribute="centerY" id="wfs-aj-LSJ"/>
+                <constraint firstItem="0f4-8m-4bj" firstAttribute="leading" secondItem="rjY-cG-fcd" secondAttribute="trailing" id="xoE-p4-vj8"/>
+                <constraint firstItem="25" firstAttribute="leading" secondItem="27" secondAttribute="trailing" id="zEV-6o-FCC"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <attributedString key="userComments">
                 <fragment content="This is a custom view to be used in place of the standard UITabBar control.  Allows the tab bar UI to be customized.">
                     <attributes>
@@ -165,6 +255,7 @@
                 <outletCollection property="tabButtons" destination="25" id="39"/>
                 <outletCollection property="tabButtons" destination="23" id="40"/>
                 <outletCollection property="tabButtons" destination="rjY-cG-fcd" id="hf3-Ln-gYR"/>
+                <outletCollection property="tabButtons" destination="0f4-8m-4bj" id="gGh-S9-6h1"/>
             </connections>
         </view>
     </objects>
@@ -175,10 +266,14 @@
         <image name="buttonSolapasClientesHighlighted.png" width="75" height="50"/>
         <image name="buttonSolapasComunicacion.png" width="75" height="50"/>
         <image name="buttonSolapasComunicacionHighlighted.png" width="75" height="50"/>
+        <image name="buttonSolapasConfiguracion.png" width="75" height="50"/>
+        <image name="buttonSolapasConfiguracionHighlighted.png" width="75" height="50"/>
         <image name="buttonSolapasCuentaCorriente.png" width="75" height="50"/>
         <image name="buttonSolapasCuentaCorrienteHighlighted.png" width="75" height="50"/>
         <image name="buttonSolapasInformacionDeVentas.png" width="75" height="50"/>
         <image name="buttonSolapasInformacionDeVentasHighlighted.png" width="75" height="50"/>
+        <image name="buttonSolapasInicio.png" width="66" height="41"/>
+        <image name="buttonSolapasInicioHighlighted.png" width="67" height="40"/>
         <image name="buttonSolapasObjetivos.png" width="75" height="50"/>
         <image name="buttonSolapasObjetivosHighlighted.png" width="75" height="50"/>
         <image name="buttonSolapasPedidos.png" width="75" height="50"/>

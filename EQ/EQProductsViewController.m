@@ -7,16 +7,18 @@
 //
 
 #import "EQProductsViewController.h"
-#import "EQProductCell.h"
+#import "Articulo+extra.h"
 #import "Articulo.h"
-#import "Precio.h"
+#import "Disponibilidad.h"
+#import "EQDataManager.h"
+#import "EQGroupCell.h"
+#import "EQImagesManager.h"
+#import "EQProductCell.h"
+#import "EQSession.h"
 #import "EQTablePopover.h"
 #import "Grupo.h"
-#import "Disponibilidad.h"
 #import "Precio+extra.h"
-#import "Articulo+extra.h"
-#import "EQGroupCell.h"
-#import "EQSession.h"
+#import "Precio.h"
 
 @interface EQProductsViewController ()
 
@@ -56,11 +58,31 @@
     [self.productsCollectionView registerNib:groupNib forCellWithReuseIdentifier:@"GroupCell"];
     self.productDetailView.delegate = self;
     [super viewDidLoad];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self.viewModel loadData];
+    [[EQDataManager sharedInstance] downloadAllProductImages];
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    //TESTPOL
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProgress:) name:IMAGE_DOWNLOAD_PROGRESS object:nil];
+}
+
+- (void) updateProgress:(NSNotification*)notification
+{
+    self.productDownloadProgressBar.hidden = NO;
+    self.productDownloadProgressBar.hidden = NO;
+    NSDictionary* progressDictionary = [notification userInfo];
+    float total = [[progressDictionary objectForKey:@"total"] floatValue];
+    float progress = [[progressDictionary objectForKey:@"progress"] floatValue];
+    [self.productDownloadProgressBar setProgress:(progress / total)];
 }
 
 - (void)didReceiveMemoryWarning

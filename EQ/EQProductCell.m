@@ -14,6 +14,16 @@
 
 @implementation EQProductCell
 
+- (void)prepareForReuse
+{
+    self.productImage.image = [UIImage imageNamed:@"catalogoFotoProductoInexistente"];
+    self.productNameLabel.text = @"";
+    self.productStatusLabel.text = @"";
+    self.productCodeLabel.text = @"";
+    self.productCostLabel.text = @"";
+    self.agotadoImage.image = nil;
+}
+
 - (void)loadArticle:(Articulo *)art {
     self.productNameLabel.text = art.nombre;
     self.productStatusLabel.text = art.disponibilidad.descripcion;

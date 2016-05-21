@@ -12,6 +12,8 @@
 #import "Usuario+extra.h"
 #import "EQSettings.h"
 
+#define kMaxNumberOfDaysWithoutUpdate 3
+
 @interface EQSession : NSObject <CLLocationManagerDelegate>
 
 + (EQSession *)sharedInstance;
@@ -25,10 +27,16 @@
 - (NSNumber *)currentLatitude;
 - (void)startMonitoring;
 - (void)stopMonitoring;
+- (BOOL) isFirstSync;
+
+- (BOOL) checkIfIncrementalSyncIsNeeded;
 - (void)forceSynchronization;
 
 @property (nonatomic,strong) Cliente *selectedClient;
 @property (nonatomic,strong) Usuario *user;
 @property (nonatomic,strong) EQSettings *settings;
+
+
+
 
 @end

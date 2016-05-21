@@ -15,7 +15,6 @@
 @property (nonatomic,strong) NSArray *clientes;
 @property (nonatomic,strong) NSArray *vendedores;
 
-- (Cliente *)cliente;
 - (Vendedor *)vendedor;
 - (float)porcentajeDescuento;
 - (NSMutableArray *)fechasFacturacion;
@@ -24,5 +23,7 @@
 
 - (NSString *)pedidoHTML;
 - (NSArray *)sortedItems;
+
+-(void)createHash;
 
 @end

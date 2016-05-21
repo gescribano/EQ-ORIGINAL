@@ -10,18 +10,24 @@
 #import "Pedido+extra.h"
 #import "Articulo+extra.h"
 
+
 @protocol EQNewOrderViewModelDelegate <EQBaseViewModelDelegate>
 
-- (void)modelDidAddItem;
+//- (void)modelDidAddItem;
 - (void)modelAddItemDidFail;
 - (void)articleUnavailable;
+
+@optional
+- (void)modelDidUpdateItem:(NSInteger)itemOrder;
+- (void)modelDidAddItem:(NSInteger)itemOrder;
+- (void)modelDidRemoveItem:(NSInteger)itemOrder;
 
 @end
 
 @interface EQNewOrderViewModel : EQBaseViewModel
 
 - (id)initWithOrder:(Pedido *)order;
-- (void)loadData;
+- (void)loadData:(int) level;
 - (void)save;
 
 @property (nonatomic,assign) id<EQNewOrderViewModelDelegate> delegate;
@@ -32,18 +38,19 @@
 @property (nonatomic,strong) NSArray *group2;
 @property (nonatomic,strong) NSArray *categories;
 
-@property (nonatomic,assign) int categorySelected;
-@property (nonatomic,assign) int group1Selected;
-@property (nonatomic,assign) int group2Selected;
-@property (nonatomic,assign) int articleSelectedIndex;
+@property (nonatomic,assign) NSInteger categorySelected;
+@property (nonatomic,assign) NSInteger group1Selected;
+@property (nonatomic,assign) NSInteger group2Selected;
+@property (nonatomic,assign) NSInteger articleSelectedIndex;
 
 @property (nonatomic,assign) BOOL newOrder;
 
-- (void)defineSelectedCategory:(int)index;
-- (void)defineSelectedGroup1:(int)index;
-- (void)defineSelectedGroup2:(int)index;
-- (void)defineSelectedArticle:(int)index;
-- (void)defineOrderStatus:(int)index;
+
+- (void)defineSelectedCategory:(NSInteger)index;
+- (void)defineSelectedGroup1:(NSInteger)index;
+- (void)defineSelectedGroup2:(NSInteger)index;
+- (void)defineSelectedArticle:(NSInteger)index;
+- (void)defineOrderStatus:(NSInteger)index;
 - (BOOL)addItemQuantity:(int)quantity;
 - (NSNumber *)itemsQuantity;
 - (NSNumber *)subTotal;

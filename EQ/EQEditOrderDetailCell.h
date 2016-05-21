@@ -7,6 +7,8 @@
 //
 
 #import "ItemPedido+extra.h"
+#import "LightItem.h"
+
 
 @protocol EQEditOrderDetailCellDelegate;
 

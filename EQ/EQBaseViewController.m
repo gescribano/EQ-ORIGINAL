@@ -10,17 +10,25 @@
 #import "EQTablePopover.h"
 #import "EQSession.h"
 #import "EQPopover.h"
+#import "EQDataAccessLayer.h"
+#import "EQDataManager.h"
+#import "AFNetworking/AFHTTPClient.h"
 #import <QuartzCore/QuartzCore.h>
 
 #define KEYBOARD_HEIGHT 210
+#define kUpdateAlertView 0
 
-@interface EQBaseViewController ()
+#define kAlertCancelButton 0
+#define kAlertAcceptButton 1
+
+@interface EQBaseViewController ()<UIAlertViewDelegate>
 
 @property (nonatomic, strong) UIPopoverController *popoverVC;
 @property (nonatomic, strong) EQBaseViewModel *viewModel;
 @property (nonatomic, strong) UIAlertView *logoutAlert;
 @property (nonatomic, strong) UIScrollView *scroll;
 @property (nonatomic, weak) UIView *activeField;
+@property (nonatomic, strong) UIAlertView* forceSyncAlert;
 
 @end
 
@@ -35,6 +43,25 @@
     [self.scroll addSubview:self.view];
     self.view = self.scroll;
 	[[self navigationController] setNavigationBarHidden:YES animated:NO];
+
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    //TESTPOL
+    [super viewWillAppear:animated];
+    
+    [self incrementalSyncCheck];
+}
+
+- (void) incrementalSyncCheck
+{
+    if ([[EQSession sharedInstance] checkIfIncrementalSyncIsNeeded])
+    {
+        NSString* msg = [NSString stringWithFormat:@"Se detecto que la aplicación lleva mas de %d días sin actualizar, desea actualizar ahora?",kMaxNumberOfDaysWithoutUpdate];
+        self.forceSyncAlert = [[UIAlertView alloc] initWithTitle:@"Actualizar" message:msg delegate:self cancelButtonTitle:@"Posponer" otherButtonTitles:@"Actualizar", nil];
+        [self.forceSyncAlert show];
+    }   
 }
 
 - (void) viewDidLayoutSubviews {
@@ -114,11 +141,11 @@
     int notificationsCount = [self.viewModel obtainUnreadOperativesCount] + [self.viewModel obtainUnreadCommercialsCount];
     self.notificationsButton.hidden = notificationsCount == 0;
     [self.notificationsButton setTitle:[NSString stringWithFormat:@"%i",notificationsCount] forState:UIControlStateNormal];
-    self.sellerNameLabel.text = self.viewModel.sellerName;
-    self.dateLabel.text = self.viewModel.currentDateWithFormat;
-    self.syncDateLabel.text = self.viewModel.lastUpdateWithFormat;
-    self.clientStatusLabel.text = self.viewModel.clientStatus;
-    self.clientNameLabel.text = self.viewModel.activeClientName;
+    [self.sellerNameLabel setText:self.viewModel.sellerName];
+    [self.dateLabel setText:self.viewModel.currentDateWithFormat];
+    [self.syncDateLabel setText:self.viewModel.lastUpdateWithFormat];
+    [self.clientStatusLabel setText: self.viewModel.clientStatus];
+    [self.clientNameLabel setText:self.viewModel.activeClientName];
 }
 
 - (void)didReceiveMemoryWarning
@@ -168,6 +195,8 @@
 - (void)logout{
     [APP_DELEGATE reStartNavigation];
     [[EQSession sharedInstance] endSession];
+//    [[EQDataAccessLayer sharedInstance] resetUserDatabase];
+//    [[EQDataManager sharedInstance] resetUpdateCompleteForAllEntities];
 }
 
 - (void)startLoading{
@@ -239,13 +268,7 @@
     [alert show];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if ([self.logoutAlert isEqual:alertView]) {
-        if (buttonIndex != alertView.cancelButtonIndex) {
-            [self logout];
-        }
-    }
-}
+
 
 - (void)tablePopover:(EQTablePopover *)sender selectedRow:(int)rowNumber selectedData:(NSString *)selectedData{
     if ([self.chooseClientButton isEqual:self.popoverOwner]) {
@@ -273,6 +296,25 @@
 
 - (IBAction)synchronizeAction:(id)sender{
     [[EQSession sharedInstance] forceSynchronization];
+}
+
+
+#pragma mark - UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ([self.logoutAlert isEqual:alertView]) {
+        if (buttonIndex != alertView.cancelButtonIndex) {
+            [self logout];
+        }
+    } else
+    {
+        if ([alertView isEqual:self.forceSyncAlert])
+        {
+            if (buttonIndex == kAlertAcceptButton)
+            {
+                [[EQSession sharedInstance] forceSynchronization];
+            }
+        }
+    }
 }
 
 @end

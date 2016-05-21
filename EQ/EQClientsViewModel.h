@@ -17,6 +17,7 @@
 
 - (void)changeSortOrder:(int)index;
 - (void)defineSearchTerm:(NSString *)term;
-- (Cliente *)clientById:(NSString *)clientId;
+
+//- (Cliente *)clientById:(NSString *)clientId;
 
 @end

@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">12F37</string>
-		<string key="IBDocument.InterfaceBuilderVersion">4510</string>
-		<string key="IBDocument.AppKitVersion">1187.39</string>
-		<string key="IBDocument.HIToolboxVersion">626.00</string>
+		<string key="IBDocument.SystemVersion">14F27</string>
+		<string key="IBDocument.InterfaceBuilderVersion">7706</string>
+		<string key="IBDocument.AppKitVersion">1348.17</string>
+		<string key="IBDocument.HIToolboxVersion">758.70</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">3742</string>
+			<string key="NS.object.0">7703</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBProxyObject</string>
@@ -91,6 +91,7 @@
 									<int key="NSfFlags">16</int>
 								</object>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUILabel" id="73356019">
 								<reference key="NSNextResponder" ref="226150323"/>
@@ -121,6 +122,7 @@
 									<int key="NSfFlags">16</int>
 								</object>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 						</array>
 						<string key="NSFrame">{{0, 44}, {768, 45}}</string>
@@ -219,6 +221,7 @@
 									<int key="NSfFlags">16</int>
 								</object>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUILabel" id="127578510">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -239,6 +242,7 @@
 								<reference key="IBUIFontDescription" ref="572637010"/>
 								<reference key="IBUIFont" ref="435441367"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUILabel" id="532049175">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -259,6 +263,7 @@
 								<reference key="IBUIFontDescription" ref="572637010"/>
 								<reference key="IBUIFont" ref="435441367"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUILabel" id="383777234">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -283,6 +288,7 @@
 								<reference key="IBUIFontDescription" ref="514418611"/>
 								<reference key="IBUIFont" ref="184582500"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUILabel" id="257122596">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -304,6 +310,7 @@
 								<reference key="IBUIFontDescription" ref="514418611"/>
 								<reference key="IBUIFont" ref="184582500"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUIButton" id="433736903">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -327,10 +334,11 @@
 								</object>
 								<object class="IBUIFontDescription" key="IBUIFontDescription" id="515375050">
 									<int key="type">2</int>
+									<int key="weightCategory">30</int>
 									<double key="pointSize">15</double>
 								</object>
-								<object class="NSFont" key="IBUIFont" id="88384765">
-									<string key="NSName">HelveticaNeue-Bold</string>
+								<object class="NSFont" key="IBUIFont" id="737583418">
+									<string key="NSName">HelveticaNeue</string>
 									<double key="NSSize">15</double>
 									<int key="NSfFlags">16</int>
 								</object>
@@ -354,6 +362,7 @@
 								<reference key="IBUIFontDescription" ref="514418611"/>
 								<reference key="IBUIFont" ref="184582500"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+								<bool key="useAutomaticPreferredMaxLayoutWidth">YES</bool>
 							</object>
 							<object class="IBUIButton" id="787847618">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -381,7 +390,7 @@
 									<string key="NSResourceName">buttonObjetivos.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 							<object class="IBUIButton" id="973708675">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -405,7 +414,7 @@
 									<string key="NSResourceName">logout.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 							<object class="IBUIButton" id="629579706">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -433,7 +442,7 @@
 									<string key="NSResourceName">buttonPedidos.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 							<object class="IBUIButton" id="168530716">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -461,7 +470,7 @@
 									<string key="NSResourceName">buttonMensajes.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 							<object class="IBUIButton" id="309498607">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -488,7 +497,11 @@
 									<int key="traits">2</int>
 									<double key="pointSize">15</double>
 								</object>
-								<reference key="IBUIFont" ref="88384765"/>
+								<object class="NSFont" key="IBUIFont" id="897456462">
+									<string key="NSName">HelveticaNeue-Bold</string>
+									<double key="NSSize">15</double>
+									<int key="NSfFlags">16</int>
+								</object>
 							</object>
 							<object class="IBUIButton" id="511896587">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -507,7 +520,7 @@
 								<reference key="IBUINormalTitleShadowColor" ref="988092990"/>
 								<reference key="IBUINormalBackgroundImage" ref="377344937"/>
 								<reference key="IBUIFontDescription" ref="272647232"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="897456462"/>
 							</object>
 							<object class="IBUIButton" id="873709916">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -526,7 +539,7 @@
 								<reference key="IBUINormalTitleShadowColor" ref="988092990"/>
 								<reference key="IBUINormalBackgroundImage" ref="377344937"/>
 								<reference key="IBUIFontDescription" ref="272647232"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="897456462"/>
 							</object>
 							<object class="IBUIButton" id="133293746">
 								<reference key="NSNextResponder" ref="750792839"/>
@@ -554,7 +567,7 @@
 									<string key="NSResourceName">buttonCliente.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 						</array>
 						<string key="NSFrameSize">{768, 44}</string>
@@ -746,7 +759,7 @@
 											<string key="NSResourceName">buttonFinalizarPedido.png</string>
 										</object>
 										<reference key="IBUIFontDescription" ref="515375050"/>
-										<reference key="IBUIFont" ref="88384765"/>
+										<reference key="IBUIFont" ref="737583418"/>
 									</object>
 									<object class="IBUIButton" id="913261837">
 										<reference key="NSNextResponder" ref="716093288"/>
@@ -769,7 +782,7 @@
 											<string key="NSResourceName">grayButton.png</string>
 										</object>
 										<reference key="IBUIFontDescription" ref="515375050"/>
-										<reference key="IBUIFont" ref="88384765"/>
+										<reference key="IBUIFont" ref="737583418"/>
 									</object>
 								</array>
 								<string key="NSFrame">{{302, 0}, {468, 824}}</string>
@@ -809,7 +822,7 @@
 									<string key="NSResourceName">buttonSolapaNoSeleccionado.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 							<object class="IBUIButton" id="191785485">
 								<reference key="NSNextResponder" ref="749397806"/>
@@ -831,7 +844,7 @@
 								<reference key="IBUISelectedBackgroundImage" ref="385761855"/>
 								<reference key="IBUINormalBackgroundImage" ref="884521716"/>
 								<reference key="IBUIFontDescription" ref="515375050"/>
-								<reference key="IBUIFont" ref="88384765"/>
+								<reference key="IBUIFont" ref="737583418"/>
 							</object>
 						</array>
 						<string key="NSFrame">{{0, 88}, {768, 866}}</string>
@@ -852,12 +865,29 @@
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
 				</object>
+				<object class="IBUIScreenMetrics" key="IBUISimulatedDestinationMetrics">
+					<string key="IBUISimulatedSizeMetricsClass">IBUIScreenMetrics</string>
+					<string key="IBUITargetRuntime">IBIPadFramework</string>
+					<string key="IBUIDisplayName">iPad Full Screen</string>
+					<object class="NSMutableDictionary" key="IBUINormalizedOrientationToSizeMap">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<array key="dict.sortedKeys">
+							<integer value="1"/>
+							<integer value="3"/>
+						</array>
+						<array key="dict.values">
+							<string>{768, 1024}</string>
+							<string>{1024, 768}</string>
+						</array>
+					</object>
+					<int key="IBUIType">1</int>
+				</object>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<bool key="usesAutoincrementingIDs">NO</bool>
-			<array class="NSMutableArray" key="connectionRecords">
+			<array key="connectionRecords">
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">view</string>
@@ -1072,6 +1102,15 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">goalsAction:</string>
+						<reference key="source" ref="787847618"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<string key="id">68Z-D4-bkC</string>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">goalsAction:</string>
 						<reference key="source" ref="873709916"/>
 						<reference key="destination" ref="841351856"/>
 						<int key="IBEventType">7</int>
@@ -1086,6 +1125,15 @@
 						<int key="IBEventType">7</int>
 					</object>
 					<string key="id">241</string>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">notificationsAction:</string>
+						<reference key="source" ref="168530716"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<string key="id">j4C-Wd-hJe</string>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -1442,10 +1490,6 @@
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<bool key="IBDocument.previouslyAttemptedUpgradeToXcode5">YES</bool>
-		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
-			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaTouchPlugin.iPhoneOS</string>
-			<real value="1536" key="NS.object.0"/>
-		</object>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDevelopmentDependencies">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaTouchPlugin.InterfaceBuilder3</string>
 			<integer value="4600" key="NS.object.0"/>
@@ -1473,6 +1517,5 @@
 			<string key="logout.png">{35, 30}</string>
 			<string key="redCircle.png">{25, 24}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">3742</string>
 	</data>
 </archive>

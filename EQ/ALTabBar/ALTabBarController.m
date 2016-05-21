@@ -28,7 +28,7 @@
         [nav pushViewController:[EQOrdersViewController new] animated:NO];
     }
     
-    [self.customTabBarView selectTabAtIndex:self.selectedIndex];
+    [self.customTabBarView selectTabAtIndex:(int)self.customSelectedIndex];
     [self.view addSubview:self.customTabBarView];
 }
 
@@ -51,7 +51,11 @@
 
 - (void)reloadControllers{
     NSMutableArray *controllers = [NSMutableArray new];
+    //NSLog(@"[%d]", [self.viewControllers count]);
     for (UIViewController *controller in self.viewControllers) {
+        
+        //NSLog(@"controller[%@]", [controller description]);
+        
         [controllers addObject:[[controller class] new]];
     }
     
@@ -62,7 +66,15 @@
 #pragma mark ALTabBarDelegate
 
 -(void)tabWasSelected:(NSInteger)index {
-    self.selectedIndex = index;
+    if (index == -1)
+    {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+    else
+    {
+        self.selectedIndex = index;
+        self.customSelectedIndex = index;
+    }
 }
 
 @end

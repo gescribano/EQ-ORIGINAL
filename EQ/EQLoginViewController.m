@@ -67,8 +67,8 @@
     [self resetTextFields];
 }
 
-- (void)resetTextFields{
-    self.usuarioTextField.text = @"";
+- (void)resetTextFields
+{
     self.passwordTextField.text = @"";
 }
 

@@ -10,14 +10,45 @@
 #import "Precio+extra.h"
 #import "Cliente+extra.h"
 #import "EQSession.h"
+#import "EQDataAccessLayer.h"
+#import "Disponibilidad+extra.h"
+#import "Precio+extra.h"
+#import "Grupo+extra.h"
+#import "Venta+extra.h"
 
 @implementation Articulo (extra)
 
 @dynamic disponibilidades;
 @dynamic grupos;
+@dynamic precios;
+@dynamic ventas;
 
 - (Disponibilidad *)disponibilidad{
     return [self.disponibilidades lastObject];
+}
+
+- (NSArray *)disponibilidades
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.disponibilidadID];
+   return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Disponibilidad class] filterByPredicate:predicate];
+}
+
+- (NSArray *)grupos
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.grupoID];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:predicate];
+}
+
+- (NSArray *)precios
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"articuloID == %@ && activo == 1",self.identifier];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Precio class] filterByPredicate:predicate];
+}
+
+- (NSArray *)ventas
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"articuloID == %@ && activo == 1",self.identifier];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Venta class] filterByPredicate:predicate];
 }
 
 - (Precio *)priceForActiveClient{

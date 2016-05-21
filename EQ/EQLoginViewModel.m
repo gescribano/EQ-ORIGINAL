@@ -69,7 +69,8 @@
     }
 }
 
-- (void)loginDidCompleteWithUser:(Usuario *)user{
+- (void)loginDidCompleteWithUser:(Usuario *)user
+{
     [[EQSession sharedInstance] regiteredUser:user];
     [self.delegate loginSuccessful];
 }

@@ -6,10 +6,12 @@
 //  Copyright (c) 2013 Sebastian Borda. All rights reserved.
 //
 
+#import "Cliente+extra.h"
+
 @protocol EQClientCellDelegate <NSObject>
 
-- (void)editClientWithID:(NSString *)clientID;
-- (void)mailToClientWithID:(NSString *)clientID;
+- (void)editClient:(Cliente *)client;
+- (void)mailToClient:(Cliente *)client;
 
 @end
 
@@ -20,7 +22,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *localityLabel;
 @property (strong, nonatomic) IBOutlet UILabel *phoneLabel;
 @property (strong, nonatomic) IBOutlet UIButton *mailButton;
-@property (strong, nonatomic) NSString *clientID;
+@property (strong, nonatomic) Cliente *client;
 
 - (IBAction)editButtonAction:(id)sender;
 - (IBAction)mailButtonAction:(id)sender;

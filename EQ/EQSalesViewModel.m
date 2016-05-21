@@ -233,9 +233,9 @@
 
 - (void)filterByGroup:(NSString *)Group{
     if (![Group isEqualToString:@"Todas"] && ![Group isEqual:@"No hay datos"]) {
-        self.Group = [[self.groupsList filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.nombre == %@",Group]] lastObject];
+        self.group = [[self.groupsList filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.nombre == %@",Group]] lastObject];
     } else {
-        self.Group = nil;
+        self.group = nil;
     }
     [self loadData];
 }

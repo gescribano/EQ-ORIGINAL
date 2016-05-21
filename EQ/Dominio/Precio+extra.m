@@ -8,6 +8,8 @@
 
 #import "Precio+extra.h"
 #import "EQSession.h"
+#import "Articulo+extra.h"
+#import "EQDataAccessLayer.h"
 
 @implementation Precio (extra)
 
@@ -26,6 +28,12 @@
     }
     
     return [self.importe floatValue];
+}
+
+- (NSArray *)articulo
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.articuloID];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Articulo class] filterByPredicate:predicate];
 }
 
 @end

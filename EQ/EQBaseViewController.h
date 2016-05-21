@@ -10,16 +10,16 @@
 #import "EQTablePopover.h"
 
 @interface EQBaseViewController : UIViewController<EQBaseViewModelDelegate,UIAlertViewDelegate,EQTablePopoverDelegate>
-@property (strong, nonatomic) IBOutlet UILabel *sellerNameLabel;
+@property (weak, nonatomic) IBOutlet UILabel *sellerNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *dateLabel;
-@property (strong, nonatomic) IBOutlet UILabel *syncDateLabel;
-@property (strong, nonatomic) IBOutlet UILabel *clientStatusLabel;
-@property (strong, nonatomic) IBOutlet UILabel *clientNameLabel;
-@property (strong, nonatomic) IBOutlet UIButton *notificationsButton;
-@property (strong, nonatomic) IBOutlet UIButton *goalsButton;
-@property (strong, nonatomic) IBOutlet UIButton *pendingOrdersButton;
-@property (nonatomic, strong) UIButton *popoverOwner;
-@property (strong, nonatomic) IBOutlet UIButton *chooseClientButton;
+@property (weak, nonatomic) IBOutlet UILabel *syncDateLabel;
+@property (weak, nonatomic) IBOutlet UILabel *clientStatusLabel;
+@property (weak, nonatomic) IBOutlet UILabel *clientNameLabel;
+@property (weak, nonatomic) IBOutlet UIButton *notificationsButton;
+@property (weak, nonatomic) IBOutlet UIButton *goalsButton;
+@property (weak, nonatomic) IBOutlet UIButton *pendingOrdersButton;
+@property (weak, nonatomic) UIButton *popoverOwner;
+@property (weak, nonatomic) IBOutlet UIButton *chooseClientButton;
 
 - (IBAction)pendingOrdersAction:(id)sender;
 - (IBAction)notificationsAction:(id)sender;

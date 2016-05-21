@@ -7,6 +7,10 @@
 //
 
 #import "Catalogo+extra.h"
+#import "EQDataAccesslayer.h"
+#import "CatalogoImagen+CoreDataProperties.h"
+
+@class CatalogoImagen;
 
 @implementation Catalogo (extra)
 
@@ -18,6 +22,13 @@
 
 -(NSArray*)getPhotosList{
     return [NSKeyedUnarchiver unarchiveObjectWithData:self.fotos];
+}
+
+- (NSArray *)imagenes
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"catalogoID == %@",self.identifier];
+    NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:@"catalogoID" ascending:YES];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[CatalogoImagen class] filterByPredicate:predicate sortBy:sort limit:0];
 }
 
 @end

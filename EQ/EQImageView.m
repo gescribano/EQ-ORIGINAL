@@ -9,6 +9,7 @@
 #import "EQImageView.h"
 #import "AFNetworking.h"
 #import "EQImagesManager.h"
+#import "EQDataManager.h"
 
 @interface EQImageView()
 
@@ -18,23 +19,18 @@
 
 - (void)loadURL:(NSString *)imagePath{
     if (imagePath) {
-        NSString *fileName = [imagePath stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
-        UIImage *image = [[EQImagesManager sharedInstance] imageNamed:fileName];
-        if (image) {
+        NSString *fileName = [imagePath lastPathComponent];
+        [[EQDataManager sharedInstance] downloadImageWithPath:imagePath
+                                                     withName:fileName
+                                                      isImage:YES
+                                                      success:^(UIImage *image)
+        {
             [self setImage:image];
-        } else{
-            NSURL *imageURL = [NSURL URLWithString:[[IMAGES_BASE_URL stringByAppendingString:imagePath] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-            NSURLRequest *request = [NSURLRequest requestWithURL:imageURL];
-            AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image){
-                [self setImage:image];
-                [[EQImagesManager sharedInstance] saveImage:image named:fileName];
-            }];
-            
-            [operation start];
         }
-
-    } else {
-        [self setImage:[UIImage imageNamed:@"catalogoFotoProductoInexistente.png"]];
+                                                      failure:^(NSError *error)
+        {
+            [self setImage:[UIImage imageNamed:@"catalogoFotoProductoInexistente.png"]];
+        }];
     }
 }
 

@@ -16,6 +16,8 @@
 
 @property (nonatomic,strong) NSArray *disponibilidades;
 @property (nonatomic,strong) NSArray *grupos;
+@property (nonatomic,strong) NSArray *precios;
+@property (nonatomic,strong) NSArray *ventas;
 
 - (Disponibilidad *)disponibilidad;
 - (Precio *)priceForActiveClient;

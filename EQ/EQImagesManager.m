@@ -54,6 +54,10 @@ NSString * const CACHE_DIRECTORY_FORMAT = @"%@/Caches/Pictures/%@";
         NSString *picture;
         while ((picture = [dir nextObject])) {
             NSString *fileName = [[picture componentsSeparatedByString:@"/"] lastObject];
+            if ([fileName isEqualToString:@".DS_Store"]) //workaround, en el simulador, agrega este archivo y hace crashear la app.
+            {
+                continue;
+            }
             if ([[fileName componentsSeparatedByString:@"."] count] == 1) {
                 NSString *directory = [fileName copy];
                 NSString *directoryPath = [picturesPath stringByAppendingFormat:@"%@/",directory];
@@ -61,13 +65,17 @@ NSString * const CACHE_DIRECTORY_FORMAT = @"%@/Caches/Pictures/%@";
                 NSDirectoryEnumerator *subDir = [mgr enumeratorAtPath:directoryPath];
                 NSString *newPicture;
                 while ((newPicture = [subDir nextObject])) {
-                    UIImage *img = [UIImage imageWithContentsOfFile:[directoryPath stringByAppendingString:newPicture]];
+                    
+//                    UIImage *img = [UIImage imageWithContentsOfFile:[directoryPath stringByAppendingString:newPicture]];
+                    
+                    
                     fileName = [directory stringByAppendingFormat:@"/%@",newPicture];
-                    [self.cacheDictionary setObject:img forKey:fileName];
+                    [self.cacheDictionary setObject:[directoryPath stringByAppendingString:newPicture] forKey:fileName]; //Saving local image URL instead of the image itself.
                 }
             } else {
-                UIImage *img = [UIImage imageWithContentsOfFile:[picturesPath stringByAppendingString:picture]];
-                [self.cacheDictionary setObject:img forKey:fileName];
+//                UIImage *img = [UIImage imageWithContentsOfFile:[picturesPath stringByAppendingString:picture]];
+                
+                [self.cacheDictionary setObject:[picturesPath stringByAppendingString:picture] forKey:fileName];
             }
             
         }
@@ -81,7 +89,7 @@ NSString * const CACHE_DIRECTORY_FORMAT = @"%@/Caches/Pictures/%@";
         // Save Image
         NSString *filePath = [NSString stringWithFormat:CACHE_DIRECTORY_FORMAT, [self documentDirectory], name];
         
-        NSData *imageData = UIImageJPEGRepresentation(image, 90);
+        NSData *imageData = UIImageJPEGRepresentation(image, 10);
         NSArray *nameParts = [name componentsSeparatedByString:@"/"];
         if ([nameParts count] > 1) {
             NSMutableArray *parts = [NSMutableArray arrayWithArray:nameParts];
@@ -97,8 +105,9 @@ NSString * const CACHE_DIRECTORY_FORMAT = @"%@/Caches/Pictures/%@";
         }
         
         NSError *error = nil;
-        if ([imageData writeToFile:filePath options:NSDataWritingAtomic error:&error]) {
-            [self.cacheDictionary setObject:image forKey:name];
+        if ([imageData writeToFile:filePath options:NSDataWritingAtomic error:&error])
+        { // Save image path to cache, not the image
+            [self.cacheDictionary setObject:filePath forKey:name];
             return YES;
         }
     }
@@ -111,19 +120,9 @@ NSString * const CACHE_DIRECTORY_FORMAT = @"%@/Caches/Pictures/%@";
 }
 
 - (UIImage *)imageNamed:(NSString *)name{
-    return [self.cacheDictionary objectForKey:name];
-}
-
-- (void)clearCache{
-    // delete all of them so we get up to date
-    for (NSString *fileName in [self.cacheDictionary allKeys]) {
-        // remove from disk
-        NSString *filePath = [NSString stringWithFormat:CACHE_DIRECTORY_FORMAT, [self documentDirectory], fileName];
-        NSFileManager *mgr = [NSFileManager defaultManager];
-        [mgr removeItemAtPath:filePath error:nil];
-    }
-    
-    [self.cacheDictionary removeAllObjects];
+    NSString* url = [self.cacheDictionary objectForKey:name];
+    UIImage *img = [UIImage imageWithContentsOfFile:url];
+    return img;
 }
 
 @end

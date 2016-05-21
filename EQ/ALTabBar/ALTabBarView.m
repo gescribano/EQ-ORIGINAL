@@ -37,16 +37,16 @@
         [self.selectedButton setSelected:YES];
         
         if (currentIndex != self.selectedButton.tag) {
-            [delegate tabWasSelected:selectedButton.tag];
+            [delegate tabWasSelected:self.selectedButton.tag];
         }
     }
 }
 
 -(void) selectTabAtIndex:(int)index{
-    int lastIndex = NSNotFound;
+    int lastIndex = (int)NSNotFound;
     for (UIButton *button in self.tabButtons) {
         if ([button isSelected]) {
-            lastIndex = button.tag;
+            lastIndex = (int)button.tag;
             [button setSelected:NO];
         }
         

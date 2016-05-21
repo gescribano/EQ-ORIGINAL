@@ -7,9 +7,15 @@
 //
 
 #import "Usuario+extra.h"
+#import "EQDataAccessLayer.h"
+#import "Comunicacion+extra.h"
 
 @implementation Usuario (extra)
 
-@dynamic comunicaciones;
+- (NSArray*) comunicaciones
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"receiverID == %@ OR senderID == %@",self.identifier,self.identifier];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Comunicacion class] filterByPredicate:predicate];
+}
 
 @end

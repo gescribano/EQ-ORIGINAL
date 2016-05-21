@@ -13,6 +13,7 @@
 #import "Pedido.h"
 #import "Grupo+extra.h"
 #import "Comunicacion.h"
+#import "EQDataManager.h"
 
 @interface EQBaseViewModel()
 
@@ -43,15 +44,18 @@
     self.clientsName = nil;
 }
 
-- (void)loadTopBarData{
-    self.pendingOrdersCount = 0;
-    NSArray *sellerOrders = [NSArray arrayWithArray:self.currentSeller.pedidos];
-    for (Pedido *order in sellerOrders) {
+- (int) pendingOrdersCount
+{
+    _pendingOrdersCount = 0;
+    for (Pedido *order in [NSArray arrayWithArray:self.currentSeller.pedidos]) {
         if ([order.estado isEqualToString:@"pendiente"]) {
-            self.pendingOrdersCount++;
+            _pendingOrdersCount++;
         }
     }
-    
+    return _pendingOrdersCount;
+}
+
+- (void)loadTopBarData{
     self.unreadGoalsCount = 0;
     self.unreadOperativesCount = 0;
     self.unreadCommercialsCount = 0;
@@ -77,7 +81,7 @@
 }
 
 - (void)loadDataInBackGround{
-        [self dataLaded];
+    [self dataLaded];
 }
 
 - (void)dataLaded{
@@ -92,7 +96,40 @@
 - (NSString *)lastUpdateWithFormat{
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"dd.MM.yy | HH:mm"];
-    return  [NSString stringWithFormat:@"%@ hs.",[dateFormat stringFromDate:[[EQSession sharedInstance] lastSyncDate]]];
+    return  [NSString stringWithFormat:@"%@",[dateFormat stringFromDate:[[EQSession sharedInstance] lastSyncDate]]];
+}
+
+- (NSString*) ventanaSincronizacion
+{
+    return [NSString stringWithFormat:@"%d minutos.",VENTANA_SINCRONIZACION_EN_MINUTOS];
+}
+
+- (NSString*) lastUpdateCatalogWithFormat
+{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"dd.MM.yy | HH:mm"];
+    NSDate* date =  [[EQDataManager sharedInstance] getLastSyncForCatalog];
+    NSString* updateCatalog = [NSString stringWithFormat:@"%@",[dateFormat stringFromDate:date]];
+    if (!updateCatalog)
+    {
+        return [self lastUpdateWithFormat];
+    }
+    else
+    {
+        return updateCatalog;
+    }
+}
+
+-(NSString*) numberOfImagesToDownload
+{
+    return @"10";
+}
+
+- (NSString *)initialDateImportWithFormat {
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"dd.MM.yy | HH:mm"];
+    NSDate* date = [[NSUserDefaults standardUserDefaults] objectForKey:PEDIDOS_FECHA_INICIO_IMPORTACION_KEY];
+    return  [NSString stringWithFormat:@"%@ hs.",[dateFormat stringFromDate:date]];
 }
 
 - (NSString *)currentDateWithFormat{
@@ -113,7 +150,8 @@
     return [EQSession sharedInstance].selectedClient;
 }
 
-- (Vendedor *)currentSeller{
+- (Vendedor *)currentSeller
+{
     return [EQSession sharedInstance].user.vendedor;
 }
 
@@ -122,7 +160,7 @@
     if(index > 0) {
         client = [self.clientsForSeller objectAtIndex:index - 1];
     }
-
+    
     [EQSession sharedInstance].selectedClient = client;
 }
 
