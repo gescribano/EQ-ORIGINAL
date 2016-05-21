@@ -42,7 +42,7 @@
 
 - (IBAction)sectionButtonAction:(id)sender{
     UIButton *button = (UIButton *)sender;
-    [APP_DELEGATE pushTabBarAtIndex:button.tag];
+    [APP_DELEGATE pushTabBarAtIndex:(int)button.tag];
 }
 
 - (IBAction)createClientButtonAction:(id)sender {

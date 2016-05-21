@@ -12,10 +12,14 @@
 #import "EQImagesManager.h"
 #import "EQOrdersViewController.h"
 #import "EQCommunicationsViewController.h"
+#import "EQSession.h"
+#import "EQDataManager.h"
 
-@interface EQAppDelegate()
 
-@property (nonatomic,strong) EQLoadingView *loadingView;
+@interface EQAppDelegate() <UIAlertViewDelegate>
+
+@property (nonatomic, strong) EQLoadingView *loadingView;
+@property (nonatomic, strong) NSDate* lastTimeWifiMessageWasDisplayed;
 
 @end
 
@@ -30,8 +34,45 @@
     [self.window makeKeyAndVisible];
     //initialize image cache
     [EQImagesManager sharedInstance];
+    [self setupReachabilityMonitor];
     
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     return YES;
+}
+
+- (void) setupReachabilityMonitor {
+    
+    self.client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@API_URL]];
+    
+    __weak EQAppDelegate* wSelf = self;
+    
+    [self.client setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
+     {
+         if ([EQSession sharedInstance].isUserLogged && ![EQDataManager sharedInstance].running
+             && status == AFNetworkReachabilityStatusReachableViaWiFi)
+         {
+             
+//             NSLog(@"lasttimeWifi:[%@]", wSelf.lastTimeWifiMessageWasDisplayed);
+//             NSLog(@"difference[%f]",[[NSDate date] timeIntervalSinceDate:wSelf.lastTimeWifiMessageWasDisplayed]);
+             
+             if (!self.lastTimeWifiMessageWasDisplayed || [[NSDate date] timeIntervalSinceDate:self.lastTimeWifiMessageWasDisplayed] > 5*60)
+             {
+                 wSelf.lastTimeWifiMessageWasDisplayed = [NSDate date];
+                 NSString* msg = [NSString stringWithFormat:@"Se detecto una conexión WIFI, quiere realizar una sincronización?"];
+                 UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Actualizar" message:msg delegate:wSelf cancelButtonTitle:@"Posponer" otherButtonTitles:@"Actualizar", nil];
+                 [alert show];
+             }
+         }
+     }];
+}
+
+#pragma mark - UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    if (buttonIndex == 1)
+    {
+        [[EQSession sharedInstance] forceSynchronization];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -42,7 +83,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 
@@ -62,21 +103,22 @@
 }
 
 /*
-// Optional UITabBarControllerDelegate method.
-- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
-{
-}
-*/
+ // Optional UITabBarControllerDelegate method.
+ - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
+ {
+ }
+ */
 
 /*
-// Optional UITabBarControllerDelegate method.
-- (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed
-{
-}
-*/
+ // Optional UITabBarControllerDelegate method.
+ - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed
+ {
+ }
+ */
 
 - (void)pushTabBarAtIndex:(int)index{
     [self.navigationController pushViewController:self.tabBarController animated:YES];
+    self.tabBarController.customSelectedIndex = index;
     [self.tabBarController selectTabAtIndex:index];
 }
 
@@ -117,6 +159,13 @@
 
 - (void)hideLoadingView{
     [self.loadingView hide];
+}
+
+#pragma mark - Handle any uncaught exception
+void uncaughtExceptionHandler(NSException *exception)
+{
+    NSLog(@"APP CRASH: %@", exception);
+    NSLog(@"Stack Trace: %@", [exception callStackSymbols]);
 }
 
 @end

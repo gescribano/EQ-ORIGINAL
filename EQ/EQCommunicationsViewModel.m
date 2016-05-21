@@ -26,41 +26,54 @@
     self.communications = nil;
 }
 
--(void)loadDataInBackGround{
+-(void)loadDataInBackGround
+{
+
+    
     NSArray *result = [NSArray arrayWithArray:[EQSession sharedInstance].user.comunicaciones];
     result = [result filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.tipo == %@", self.communicationType]];
     result = [result sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"creado" ascending:NO]]];
     
     NSMutableArray *subPredicates = [NSMutableArray array];
-    if ([self.searchTerm length] > 0) {
+    if ([self.searchTerm length] > 0)
+    {
         [subPredicates addObject:[NSPredicate predicateWithFormat:@"SELF.titulo beginswith[cd] %@ || SELF.descripcion beginswith[cd] %@ || SELF.descripcion CONTAINS[cd] %@ || SELF.titulo CONTAINS[cd] %@",self.searchTerm,self.searchTerm,self.searchTerm,self.searchTerm]];
     }
     
-    if ([self.clientName length] > 0) {
+    if ([self.clientName length] > 0)
+    {
         [subPredicates addObject:[NSPredicate predicateWithFormat:@"SELF.cliente.nombre == %@",self.clientName]];
     }
     
-    if ([subPredicates count] > 0) {
+    if ([subPredicates count] > 0)
+    {
         result = [result filteredArrayUsingPredicate:[NSCompoundPredicate andPredicateWithSubpredicates:subPredicates]];
     }
     
     self.clientsList = [NSMutableArray arrayWithObject:@"Todos"];
-    for (Comunicacion *communication in result) {
-        if ([communication.cliente.nombre length] > 0 && ![self.clientsList containsObject:communication.cliente.nombre]) {
+    for (Comunicacion *communication in result)
+    {
+        if ([communication.cliente.nombre length] > 0 && ![self.clientsList containsObject:communication.cliente.nombre])
+        {
             [self.clientsList addObject: communication.cliente.nombre];
         }
     }
     
     int count = 0;
     OrderedDictionary *threads = [[OrderedDictionary alloc] init];
-    for (Comunicacion *comm in result) {
-        if (comm.leido == nil) {
+    for (Comunicacion *comm in result)
+    {
+        if (comm.leido == nil)
+        {
             count++;
         }
         NSMutableArray *commucations = threads[comm.threadID];
-        if (commucations) {
+        if (commucations)
+        {
             [commucations addObject:comm];
-        }else {
+        }
+        else
+        {
             commucations = [NSMutableArray arrayWithObject:comm];
             [threads setObject:commucations forKey:comm.threadID];
         }
@@ -68,11 +81,16 @@
     
     self.communications = threads;
     
-    if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_OPERATIVE]) {
+    if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_OPERATIVE])
+    {
         self.notificationsTitle = [NSString stringWithFormat:@"Operativas (%i)",count];
-    } else if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_COMMERCIAL]) {
+    }
+    else if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_COMMERCIAL])
+    {
         self.notificationsTitle = [NSString stringWithFormat:@"Oportunidades (%i)",count];
-    } else if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_GOAL]) {
+    }
+    else if ([self.communicationType isEqualToString:COMMUNICATION_TYPE_GOAL])
+    {
         self.notificationsTitle = [NSString stringWithFormat:@"Objetivos (%i)",count];
     }
     
@@ -85,8 +103,10 @@
 
 - (void)finalizeThread{
     NSArray *communications = [self.communications objectForKey:self.selectedCommunication.threadID];
-    for (Comunicacion *communication in communications) {
-        if ([communication.activo boolValue]) {
+    for (Comunicacion *communication in communications)
+    {
+        if ([communication.activo boolValue])
+        {
             communication.activo = @0;
             [[EQDataAccessLayer sharedInstance] saveContext];
             [[EQDataManager sharedInstance] sendCommunication:communication];
@@ -95,14 +115,16 @@
 }
 
 - (void)didReadCommunication{
-    if (self.selectedCommunication.leido == nil) {
+    if (self.selectedCommunication.leido == nil)
+    {
         self.selectedCommunication.leido = [NSDate date];
         [[EQDataAccessLayer sharedInstance] saveContext];
         [[EQDataManager sharedInstance] sendCommunication:self.selectedCommunication];
     }
 }
 
-- (void)sendResponseWithMessage:(NSString *)message{
+- (void)sendResponseWithMessage:(NSString *)message
+{
     Comunicacion *communication = (Comunicacion *)[[EQDataAccessLayer sharedInstance] createManagedObject:@"Comunicacion"];
     communication.titulo = self.selectedCommunication.titulo;
     communication.descripcion = message;

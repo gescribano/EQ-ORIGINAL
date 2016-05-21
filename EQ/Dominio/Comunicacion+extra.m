@@ -7,6 +7,9 @@
 //
 
 #import "Comunicacion+extra.h"
+#import "EQDataAccessLayer.h"
+#import "Usuario+extra.h"
+#import "Cliente+extra.h"
 
 @implementation Comunicacion (extra)
 
@@ -28,6 +31,24 @@
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"Comunicacion receiverID:%@ senderID:%@ clienteID:%@",self.receiverID, self.senderID, self.clienteID];
+}
+
+- (NSArray *)clientes
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.senderID];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Usuario class] filterByPredicate:predicate];
+}
+
+- (NSArray *)receivers
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.receiverID];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Usuario class] filterByPredicate:predicate];
+}
+
+- (NSArray *)senders
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.clienteID];
+    return  [[EQDataAccessLayer sharedInstance] objectListForClass:[Cliente class] filterByPredicate:predicate];
 }
 
 @end

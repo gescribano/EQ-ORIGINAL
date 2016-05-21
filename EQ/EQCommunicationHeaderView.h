@@ -25,7 +25,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *communicationsQuantity;
 @property (weak, nonatomic) id<EQCommunicationHeaderViewDelegate> delegate;
 @property (nonatomic, strong) NSArray* communications;
-@property (assign, nonatomic) int section;
+@property (assign, nonatomic) NSInteger section;
 
 - (void)loadCommunications:(NSArray *)communications;
 - (IBAction)selectedAction:(id)sender;

@@ -11,15 +11,13 @@
 #import "EQDataAccessLayer.h"
 #import "ItemFacturado.h"
 #import "Vendedor.h"
+#import "NSString+MD5.h"
 
 @implementation Pedido (extra)
 
 @dynamic clientes;
 @dynamic vendedores;
 
-- (Cliente *)cliente{
-    return [self.clientes lastObject];
-}
 
 - (Vendedor *)vendedor{
     return [self.vendedores lastObject];
@@ -42,8 +40,9 @@
     order.observaciones = self.observaciones;
     order.subTotal = self.subTotal;
     order.total = self.total;
-    order.clienteID = self.clienteID;
+    order.cliente = self.cliente;
     order.vendedorID = self.vendedorID;
+    order.hashId = self.hashId;
     for (ItemPedido *item in self.items) {
         [order addItemsObject:[item copy]];
     }
@@ -74,7 +73,7 @@
 - (NSMutableArray *)fechasFacturacion{
     ItemPedido *item = [self.items anyObject];
     NSMutableArray *fechas = [NSMutableArray array];
-    for (ItemFacturado *facturado in item.facturados) {
+    for (ItemFacturado *facturado in item.itemsFacturados) {
         if (facturado.facturado) {
             [fechas addObject:facturado.facturado];
         }
@@ -129,6 +128,26 @@
         return (NSComparisonResult)NSOrderedSame;
     }];
     return  sortedArray;
+}
+
+-(NSArray *)vendedores
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.vendedorID];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Vendedor class] filterByPredicate:predicate];
+}
+
+
+-(void)createHash {
+  
+  NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+  [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+  NSLog(@"date[%@]", [dateFormatter stringFromDate:self.fecha]);
+  
+  NSString *orderCode = [NSString stringWithFormat:@"%@&%@&%@&%@",[dateFormatter stringFromDate:self.fecha],self.vendedorID, self.cliente.identifier,[self total]];
+  NSLog(@"parseOrder hash:[%@]", [orderCode MD5]);
+  
+  self.hashId = [orderCode MD5];
+  
 }
 
 @end

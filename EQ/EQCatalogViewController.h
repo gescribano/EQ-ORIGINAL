@@ -9,17 +9,21 @@
 #import "EQBaseViewController.h"
 
 @interface EQCatalogViewController : EQBaseViewController <UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate>
+
 @property (strong, nonatomic) IBOutlet UICollectionView *catalogsCollectionView;
 @property (strong, nonatomic) IBOutlet UILabel *catalogTitleLabel;
-- (IBAction)closeCatalogAction:(id)sender;
 @property (strong, nonatomic) IBOutlet UIView *catalogDetailView;
 @property (strong, nonatomic) IBOutlet UIScrollView *catalogScrollView;
 @property (strong, nonatomic) IBOutlet UIButton *categoryOneButton;
-- (IBAction)categoryOneButtonAction:(id)sender;
 @property (strong, nonatomic) IBOutlet UIButton *categoryTwoButton;
-- (IBAction)categoryTwoButtonAction:(id)sender;
 @property (strong, nonatomic) IBOutlet UIButton *categoryThreeButton;
-- (IBAction)categoryThreeButtonAction:(id)sender;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *categoryButtonsList;
+
+@property (weak, nonatomic) IBOutlet UIProgressView *catalogDownloadProgressBar;
+
+- (IBAction)closeCatalogAction:(id)sender;
+- (IBAction)categoryOneButtonAction:(id)sender;
+- (IBAction)categoryTwoButtonAction:(id)sender;
+- (IBAction)categoryThreeButtonAction:(id)sender;
 
 @end

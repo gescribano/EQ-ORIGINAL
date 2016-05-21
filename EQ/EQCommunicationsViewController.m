@@ -71,18 +71,18 @@
     if (self.viewLoaded) {
         [self.viewModel loadData];
     }
-
+    
 }
 
 - (IBAction)operativesAction:(id)sender {
     self.openedSections = [NSMutableArray array];
-     [self openCommunication:nil atIndex:nil];
+    [self openCommunication:nil atIndex:nil];
     [self changeToOperative];
 }
 
 - (IBAction)oportunitiesAction:(id)sender {
     self.openedSections = [NSMutableArray array];
-     [self openCommunication:nil atIndex:nil];
+    [self openCommunication:nil atIndex:nil];
     [self changeToCommercial];
 }
 
@@ -173,7 +173,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if ([self.openedSections containsObject:[NSNumber numberWithInt:section]]) {
+    if ([self.openedSections containsObject:[NSNumber numberWithInt:(int)section]]) {
         NSNumber *key = [self.viewModel.communications keyAtIndex:section];
         NSArray *communications = [self.viewModel.communications objectForKey:key];
         return [communications count];
@@ -218,7 +218,7 @@
         view = [arrayOfViews objectAtIndex:0];
         [self.headers addObject:view];
     }
-
+    
     [view loadCommunications:communications];
     view.section = section;
     view.delegate = self;
@@ -242,13 +242,14 @@
     [self openCommunication:communications[indexPath.row] atIndex:indexPath];
 }
 
-- (void)communicationHeaderSelecter:(EQCommunicationHeaderView *)sender{
+- (void)communicationHeaderSelecter:(EQCommunicationHeaderView *)sender
+{
     if (![self.viewModel.communicationType isEqualToString:COMMUNICATION_TYPE_OPERATIVE]){
-        if ([self.openedSections containsObject:[NSNumber numberWithInt:sender.section]]) {
-            [self.openedSections removeObject:[NSNumber numberWithInt:sender.section]];
+        if ([self.openedSections containsObject:[NSNumber numberWithInteger:sender.section]]) {
+            [self.openedSections removeObject:[NSNumber numberWithInteger:sender.section]];
             [self closeSection:sender.section];
         } else {
-            [self.openedSections addObject:[NSNumber numberWithInt:sender.section]];
+            [self.openedSections addObject:[NSNumber numberWithInteger:sender.section]];
             [self openSection:sender.section];
         }
     }
@@ -257,7 +258,7 @@
     [self openCommunication:sender.mainCommunication atIndex:rowIndex];
 }
 
-- (void)openSection:(int)section{
+- (void)openSection:(NSInteger)section{
     NSNumber *key = [self.viewModel.communications keyAtIndex:section];
     NSArray *communications = [self.viewModel.communications objectForKey:key];
     
@@ -272,7 +273,7 @@
     [self.tableView endUpdates];
 }
 
-- (void)closeSection:(int)section{
+- (void)closeSection:(NSInteger)section{
     NSNumber *key = [self.viewModel.communications keyAtIndex:section];
     NSArray *communications = [self.viewModel.communications objectForKey:key];
     
@@ -312,7 +313,7 @@
             self.replyButton.hidden = YES;
         } else {
             NSNumber *key = [self.viewModel.communications keyAtIndex:indexPath.section];
-            self.messageHeader.text = [NSString stringWithFormat:@"%i de %i",indexPath.row + 1,[[self.viewModel.communications objectForKey:key] count]];
+            self.messageHeader.text = [NSString stringWithFormat:@"%i de %i",(int)indexPath.row + 1,(int)[[self.viewModel.communications objectForKey:key] count]];
             self.finishButton.hidden = NO;
             self.replyButton.hidden = NO;
             if (![communication.activo boolValue]) {

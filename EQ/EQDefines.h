@@ -8,14 +8,15 @@
 #import "EQAppDelegate.h"
 
 typedef enum{
-    EQTabIndexOrders,
-    EQTabIndexCurrentAccount,
-    EQTabIndexSales,
-    EQTabIndexCommunications,
-    EQTabIndexGoals,
-    EQTabIndexProducts,
-    EQTabIndexClients,
-    EQTabIndexCatalogs
+    EQTABIndexInit = -1,
+    EQTabIndexOrders = 0,
+    EQTabIndexCurrentAccount = 1,
+    EQTabIndexSales = 2,
+    EQTabIndexCommunications = 3,
+    EQTabIndexGoals = 4,
+    EQTabIndexProducts = 5,
+    EQTabIndexClients = 6,
+    EQTabIndexCatalogs = 7
 }EQTabIndex;
 
 #define APP_DELEGATE (EQAppDelegate *)[[UIApplication sharedApplication]delegate]
@@ -28,9 +29,9 @@ typedef enum{
 #else
     #define MAXIMUM_MINUTES_TO_UPDATE 10
     #define HOST @"www.eqarte.com.ar"
-    #define BASE_URL @"http://www.eqarte.com.ar/"
-    #define IMAGES_BASE_URL @"http://www.eqarte.com.ar/wp-content/uploads/"
-    #define API_URL "http://www.eqarte.com.ar/wp-admin/admin-ajax.php"
+    #define BASE_URL @"https://www.eqarte.com.ar/"
+    #define IMAGES_BASE_URL @"https://www.eqarte.com.ar/wp-content/uploads/"
+    #define API_URL "https://www.eqarte.com.ar/wp-admin/admin-ajax.php"
 #endif
 
 #define DATA_UPDATED_NOTIFICATION @"dataUpdatedNotification"

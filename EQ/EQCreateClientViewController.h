@@ -63,6 +63,6 @@
 - (IBAction)addressChanged:(id)sender;
 - (IBAction)discountButtonAction:(id)sender;
 
-- (id)initWithClientId:(NSNumber *)clientId;
+- (id)initWithClient:(Cliente *)client;
 
 @end

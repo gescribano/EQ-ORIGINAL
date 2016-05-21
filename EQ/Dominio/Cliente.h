@@ -2,13 +2,14 @@
 //  Cliente.h
 //  EQ
 //
-//  Created by Sebastian Borda on 9/18/13.
-//  Copyright (c) 2013 Sebastian Borda. All rights reserved.
+//  Created by Jonathan on 9/2/15.
+//  Copyright (c) 2015 Sebastian Borda. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+@class Pedido;
 
 @interface Cliente : NSManagedObject
 
@@ -18,6 +19,7 @@
 @property (nonatomic, retain) NSString * codigo1;
 @property (nonatomic, retain) NSString * codigo2;
 @property (nonatomic, retain) NSString * codigoPostal;
+@property (nonatomic, retain) NSNumber * conDescuento;
 @property (nonatomic, retain) NSString * condicionDePagoID;
 @property (nonatomic, retain) NSString * cuit;
 @property (nonatomic, retain) NSNumber * descuento1;
@@ -48,6 +50,14 @@
 @property (nonatomic, retain) NSString * vendedorID;
 @property (nonatomic, retain) NSString * web;
 @property (nonatomic, retain) NSString * zonaEnvioID;
-@property (nonatomic, retain) NSNumber * conDescuento;
+@property (nonatomic, retain) NSSet *pedidos;
+@end
+
+@interface Cliente (CoreDataGeneratedAccessors)
+
+- (void)addPedidosObject:(Pedido *)value;
+- (void)removePedidosObject:(Pedido *)value;
+- (void)addPedidos:(NSSet *)values;
+- (void)removePedidos:(NSSet *)values;
 
 @end

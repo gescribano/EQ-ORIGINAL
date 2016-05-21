@@ -22,7 +22,7 @@
 @property(nonatomic,assign) BOOL hasDiscount;
 
 @property (nonatomic,weak) id<EQBaseViewModelDelegate> delegate;
-@property (nonatomic,strong) NSString *clientID;
+//@property (nonatomic,strong) NSString *clientID;
 @property (nonatomic,strong) Cliente *client;
 
 - (void)loadData;
@@ -36,14 +36,6 @@
 - (NSArray *)obtainPaymentConditionList;
 - (NSArray *)obtainTaxesList;
 
-- (void)selectedTaxAtIndex:(int)index;
-- (void)selectedProvinceAtIndex:(int)index;
-- (void)selectedPaymentConditionAtIndex:(int)index;
-- (void)selectedCollectorAtIndex:(int)index;
-- (void)selectedSellerAtIndex:(int)index;
-- (void)selectedSalesLineAtIndex:(int)index;
-- (void)selectedDeliveryAreaAtIndex:(int)index;
-- (void)selectedExpressAtIndex:(int)index;
 - (void)selectedDiscountAtIndex:(int)index;
 
 - (NSString *)obtainSelectedSeller;

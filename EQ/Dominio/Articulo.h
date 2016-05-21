@@ -2,8 +2,8 @@
 //  Articulo.h
 //  EQ
 //
-//  Created by Sebastian Borda on 8/25/13.
-//  Copyright (c) 2013 Sebastian Borda. All rights reserved.
+//  Created by Jonathan on 9/23/15.
+//  Copyright (c) 2015 Sebastian Borda. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -26,5 +26,6 @@
 @property (nonatomic, retain) NSNumber * multiploPedido;
 @property (nonatomic, retain) NSString * nombre;
 @property (nonatomic, retain) NSString * tipo;
+@property (nonatomic, retain) NSString * estado;
 
 @end

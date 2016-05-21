@@ -39,13 +39,13 @@
     return self;
 }
 
-- (id)initWithClientId:(NSString *)clientId
+- (id)initWithClient:(Cliente*)client
 {
     self = [super init];
     if (self) {
         self.viewModel = [EQCreateClientViewModel new];
         self.viewModel.delegate = self;
-        self.viewModel.clientID = clientId;
+        self.viewModel.client = client;
         [self.viewModel loadData];
     }
     return self;
@@ -122,7 +122,7 @@
 }
 
 - (void)validateValue:(int)selectedIndex forRelation:(NSString *)relation{
-    if (selectedIndex == NSNotFound) {
+    if (selectedIndex == -1) {
         [self addMessageError:[NSMutableString stringWithFormat:@"Debe seleccionar un valor para %@.", relation]];
     }
 }
@@ -242,7 +242,9 @@
     [self presentPopoverInView:button withContent:popover];
 }
 
-- (IBAction)saveButtonAction:(id)sender {
+- (IBAction)saveButtonAction:(id)sender
+{
+    
     NSMutableDictionary *clientDictionary = [NSMutableDictionary new];
     [clientDictionary setNotEmptyString:[self validateNonEmptyTextField:self.clientNameTextField withName:@"Nombre"] forKey:@"name"];
     [clientDictionary setNotEmptyString:[self validateNonEmptyTextField:self.clientAliasTextField withName:@"Nombre de fantasia"] forKey:@"alias"];
@@ -307,21 +309,21 @@
 - (void)tablePopover:(EQTablePopover *)sender selectedRow:(int)rowNumber selectedData:(NSString *)selectedData{
     if (selectedData) {
         if ([self isButtonPopoverOwner:self.provinceButton]) {
-            [self.viewModel selectedProvinceAtIndex:rowNumber];
+            [self.viewModel setSelectedProvinceAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.deliveryAreaButton]) {
-            [self.viewModel selectedDeliveryAreaAtIndex:rowNumber];
+            [self.viewModel setSelectedDeliveryAreaAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.expressButton]) {
-            [self.viewModel selectedExpressAtIndex:rowNumber];
+            [self.viewModel setSelectedExpressAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.sellerButton]) {
-            [self.viewModel selectedSellerAtIndex:rowNumber];
+            [self.viewModel setSelectedSellerAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.collectorButton]) {
-            [self.viewModel selectedCollectorAtIndex:rowNumber];
+            [self.viewModel setSelectedCollectorAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.salesLineButton]) {
-            [self.viewModel selectedSalesLineAtIndex:rowNumber];
+            [self.viewModel setSelectedSalesLineAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.paymentConditionButton]) {
-            [self.viewModel selectedPaymentConditionAtIndex:rowNumber];
+            [self.viewModel setSelectedPaymentConditionAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.taxesButton]) {
-            [self.viewModel selectedTaxAtIndex:rowNumber];
+            [self.viewModel setSelectedTaxAtIndex:rowNumber];
         } else if ([self isButtonPopoverOwner:self.discountButton]) {
             [self.viewModel selectedDiscountAtIndex:rowNumber];
         }

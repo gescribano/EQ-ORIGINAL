@@ -26,14 +26,17 @@
                 for (NSString* key in [dictionary allKeys]) {
                     if ([key isEqualToString:@"data"]) {
                         jsonArray = [dictionary objectForKey:key];
+                        //NSLog(@"json count [%lu]", [jsonArray count]);
+
                     } else if([key isEqualToString:@"error"]) {
                         error = [[dictionary objectForKey:key] boolValue];
                     } else if([key isEqualToString:@"message"]){
                         message = [dictionary objectForKey:key];
-                        NSLog(@"%@", message);
+                        NSLog(@"makeRequest message[%@]", message);
                     }
                 }
             } else {
+                //NSLog(@"count[%lu]", [JSON count]);
                 jsonArray = JSON;
             }
             

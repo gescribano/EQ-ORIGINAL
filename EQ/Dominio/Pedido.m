@@ -2,11 +2,12 @@
 //  Pedido.m
 //  EQ
 //
-//  Created by Sebastian Borda on 8/25/13.
-//  Copyright (c) 2013 Sebastian Borda. All rights reserved.
+//  Created by Jonathan on 9/2/15.
+//  Copyright (c) 2015 Sebastian Borda. All rights reserved.
 //
 
 #import "Pedido.h"
+#import "Cliente.h"
 #import "ItemPedido.h"
 
 
@@ -14,12 +15,12 @@
 
 @dynamic activo;
 @dynamic actualizado;
-@dynamic clienteID;
 @dynamic descuento;
 @dynamic descuento3;
 @dynamic descuento4;
 @dynamic estado;
 @dynamic fecha;
+@dynamic hashId;
 @dynamic identifier;
 @dynamic latitud;
 @dynamic longitud;
@@ -29,5 +30,6 @@
 @dynamic total;
 @dynamic vendedorID;
 @dynamic items;
+@dynamic cliente;
 
 @end

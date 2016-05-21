@@ -29,6 +29,7 @@
 
 @end
 
+
 @implementation EQNewOrderViewController
 
 - (id)init {
@@ -37,6 +38,7 @@
         self.viewModel = [EQNewOrderViewModel new];
         self.viewModel.delegate = self;
         self.isInteractionEnable = YES;
+        self.viewModel.newOrder = YES;
     }
     
     return self;
@@ -49,7 +51,6 @@
         self.viewModel.delegate = self;
         self.isInteractionEnable = YES;
     }
-    
     return self;
 }
 
@@ -61,7 +62,6 @@
         self.viewModel.newOrder = NO;
         self.isInteractionEnable = YES;
     }
-    
     return self;
 }
 
@@ -99,21 +99,34 @@
         [self.finishOrderButton setTitle:@"Volver" forState:UIControlStateNormal];
         self.cancelOrderButton.hidden = YES;
     }
+    
 }
 
-- (void)viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-    [[EQSession sharedInstance] startMonitoring];
-    self.segmentStatus.selectedSegmentIndex = [self.viewModel orderStatusIndex];
-    self.orderClientLabel.text = [self.clientNameLabel.text length] > 0 ? self.clientNameLabel.text : self.viewModel.order.cliente.nombre;
-    self.orderLabel.text = ![self.viewModel.order.identifier intValue] > 0 ? @"": self.viewModel.order.identifier;
+- (void)viewWillAppear:(BOOL)animated
+{
+    //TESTPOL
+    [super viewWillAppear:animated];
+    
+    self.orderClientLabel.text = self.viewModel.order.cliente.nombre;
+    self.orderLabel.text = !([self.viewModel.order.identifier intValue] > 0) ? @"": self.viewModel.order.identifier;
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"dd.MM.yy"];
     self.orderDate.text = [dateFormat stringFromDate:[self.viewModel date]];
     self.orderSyncDate.text = [dateFormat stringFromDate:self.viewModel.order.sincronizacion];
     
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
+    [self modelWillStartDataLoading];
+    
+    [[EQSession sharedInstance] startMonitoring];
+    self.segmentStatus.selectedSegmentIndex = [self.viewModel orderStatusIndex];
+    [self hideQuantity];
     [self.viewModel loadTopBarData];
-    [self.viewModel loadData];
+    [self.viewModel loadData:0];
+    [self modelDidUpdateData:0 recalculate:YES];
 }
 
 - (void)didReceiveMemoryWarning{
@@ -156,7 +169,7 @@
 - (IBAction)segmentStatusChange:(id)sender {
     if ([self canEdit]) {
         UISegmentedControl *control = (UISegmentedControl *)sender;
-        [self.viewModel defineOrderStatus:control.selectedSegmentIndex];
+        [self.viewModel defineOrderStatus:(int)control.selectedSegmentIndex];
     }
 }
 
@@ -186,16 +199,33 @@
 
 - (IBAction)segmentSortChanged:(id)sender {
     if ([sender isEqual:self.segmentGroup1]) {
-        [self.viewModel sortGroup1ByIndex:self.segmentGroup1.selectedSegmentIndex];
+        [self modelWillStartDataLoading];
+
+        [self.viewModel sortGroup1ByIndex:(int)self.segmentGroup1.selectedSegmentIndex];
+        //POL
+        [self.viewModel loadData:0];
+        [self modelDidUpdateData:0 recalculate:NO];
     }
     
     if ([sender isEqual:self.segmentGroup2]) {
-        [self.viewModel sortGroup2ByIndex:self.segmentGroup2.selectedSegmentIndex];
+        [self modelWillStartDataLoading];
+
+        [self.viewModel sortGroup2ByIndex:(int)self.segmentGroup2.selectedSegmentIndex];
+        //POL
+        [self.viewModel loadData:1];
+        [self modelDidUpdateData:1 recalculate:NO];
+
     }
     
     if ([sender isEqual:self.segmentArticles]) {
-        [self.viewModel sortArticlesByIndex:self.segmentArticles.selectedSegmentIndex];
+        [self modelWillStartDataLoading];
+        [self.viewModel sortArticlesByIndex:(int)self.segmentArticles.selectedSegmentIndex];
+        //POL
+        [self.viewModel loadData:2];
+        [self modelDidUpdateData:2 recalculate:NO];
     }
+    
+
 }
 
 - (IBAction)articleDetailButton:(id)sender {
@@ -292,7 +322,7 @@
 - (void)tablePopover:(EQTablePopover *)sender selectedRow:(int)rowNumber selectedData:(NSString *)selectedData{
     if ([self.popoverOwner isEqual:self.categoryButton]) {
         [self.viewModel defineSelectedCategory:rowNumber];
-        [self.viewModel loadData];
+//        [self.viewModel loadData];
         [self.categoryButton setTitle:[NSString stringWithFormat:@"  %@",selectedData] forState:UIControlStateNormal];
         [self closePopover];
     }
@@ -316,48 +346,57 @@
     }
 }
 
-- (void)modelDidUpdateData{
-    NSString *discountText = [NSString stringWithFormat:@"(%.0f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
-    self.discountLabel.text = discountText;
-    
-    if ([self.viewModel.order.observaciones length] > 0) {
-        self.observationTextView.text = self.viewModel.order.observaciones;
+//- (void)modelDidUpdateData{
+//    NSString *discountText = [NSString stringWithFormat:@"(%.0f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
+//    self.discountLabel.text = discountText;
+//    
+//    if ([self.viewModel.order.observaciones length] > 0) {
+//        self.observationTextView.text = self.viewModel.order.observaciones;
+//    }
+//    
+//    self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
+//    self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
+//    CGFloat precio = [[self.viewModel.articleSelected priceForClient:self.viewModel.order.cliente] priceForClient:self.viewModel.order.cliente];
+//    self.priceLabel.text = [NSString stringWithFormat:@"$ %.2f",precio];
+//    
+//    NSIndexPath *table1IndexPath = self.viewModel.group1Selected != -1 ? [NSIndexPath indexPathForRow:self.viewModel.group1Selected inSection:0] : nil;
+//    NSIndexPath *table2IndexPath = self.viewModel.group2Selected != -1 ? [NSIndexPath indexPathForRow:self.viewModel.group2Selected inSection:0] : nil;
+//    NSIndexPath *table3IndexPath = self.viewModel.articleSelected ? [NSIndexPath indexPathForRow:self.viewModel.articleSelectedIndex inSection:0] : nil;
+//    
+//    [self.tableGroup1 reloadData];
+//    [self.tableGroup2 reloadData];
+//    [self.tableGroup3 reloadData];
+//    [self.tableOrderDetail reloadData];
+//    
+//    if (table1IndexPath) {
+//        [self.tableGroup1 selectRowAtIndexPath:table1IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+//    }
+//    
+//    if (table2IndexPath) {
+//        [self.tableGroup2 selectRowAtIndexPath:table2IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+//    }
+//    
+//    if (table3IndexPath){
+//        [self.tableGroup3 selectRowAtIndexPath:table3IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+//    }
+//    
+//    [self loadQuantity];
+//    [super modelDidUpdateData];
+//}
+- (void)hideQuantity {
+    for (int index = 0; [self.quantityButtons count] > index; index++) {
+        UIButton *button = self.quantityButtons[index];
+        button.hidden = YES;
     }
-    
-    self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
-    self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
-    CGFloat precio = [[self.viewModel.articleSelected priceForClient:self.viewModel.order.cliente] priceForClient:self.viewModel.order.cliente];
-    self.priceLabel.text = [NSString stringWithFormat:@"$ %.2f",precio];
-    
-    NSIndexPath *table1IndexPath = self.viewModel.group1Selected != NSNotFound ? [NSIndexPath indexPathForRow:self.viewModel.group1Selected inSection:0] : nil;
-    NSIndexPath *table2IndexPath = self.viewModel.group2Selected != NSNotFound ? [NSIndexPath indexPathForRow:self.viewModel.group2Selected inSection:0] : nil;
-    NSIndexPath *table3IndexPath = self.viewModel.articleSelected ? [NSIndexPath indexPathForRow:self.viewModel.articleSelectedIndex inSection:0] : nil;
-    
-    [self.tableGroup1 reloadData];
-    [self.tableGroup2 reloadData];
-    [self.tableGroup3 reloadData];
-    [self.tableOrderDetail reloadData];
-    
-    if (table1IndexPath) {
-        [self.tableGroup1 selectRowAtIndexPath:table1IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    }
-    
-    if (table2IndexPath) {
-        [self.tableGroup2 selectRowAtIndexPath:table2IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    }
-    
-    if (table3IndexPath){
-        [self.tableGroup3 selectRowAtIndexPath:table3IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    }
-    
-    [self loadQuantity];
-    [super modelDidUpdateData];
 }
+
+
 
 - (void)loadQuantity{
     int minimum = [self.viewModel.articleSelected.minimoPedido intValue];
     int multiplicity = [self.viewModel.articleSelected.multiploPedido intValue];
     int base = 0;
+    
     for (int index = 0; [self.quantityButtons count] > index; index++) {
         UIButton *button = self.quantityButtons[index];
         if (self.viewModel.articleSelected) {
@@ -373,20 +412,80 @@
     }
     
     self.itemsQuantityLabel.text = [self.viewModel.itemsQuantity stringValue];
-    self.itemsLabel.text = [NSString stringWithFormat:@"%i",[self.viewModel.order.items count]];
+    self.itemsLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[self.viewModel.order.items count]];
     self.quantityTextField.text = [[self.viewModel quantityOfCurrentArticle] stringValue];
 }
 
-- (void)modelDidAddItem{
-    [self.tableOrderDetail reloadData];
+//- (void)modelDidAddItem{
+//    [self.tableOrderDetail reloadData];
+//    NSString *discountText = [NSString stringWithFormat:@"(%.2f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
+//    self.discountLabel.text = discountText;
+//    
+//    self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
+//    self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
+//    self.itemsQuantityLabel.text = [self.viewModel.itemsQuantity stringValue];
+//    self.itemsLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[self.viewModel.order.items count]];
+//}
+
+
+- (void)modelDidUpdateItem:(NSInteger)itemOrder {
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:itemOrder inSection:0];
+    NSArray* rowsToReload = [NSArray arrayWithObjects:indexPath, nil];
+    [self.tableOrderDetail reloadRowsAtIndexPaths:rowsToReload withRowAnimation:UITableViewRowAnimationNone];
+    
+    [self.tableOrderDetail scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+
     NSString *discountText = [NSString stringWithFormat:@"(%.2f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
     self.discountLabel.text = discountText;
     
     self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
     self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
     self.itemsQuantityLabel.text = [self.viewModel.itemsQuantity stringValue];
-    self.itemsLabel.text = [NSString stringWithFormat:@"%i",[self.viewModel.order.items count]];
+    self.itemsLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[self.viewModel.order.items count]];
 }
+
+
+
+- (void)modelDidAddItem:(NSInteger)itemOrder {
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:itemOrder inSection:0];
+    NSArray* rowsToInsert = [NSArray arrayWithObjects:indexPath, nil];
+
+    [self.tableOrderDetail insertRowsAtIndexPaths:rowsToInsert withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableOrderDetail scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+
+    NSString *discountText = [NSString stringWithFormat:@"(%.2f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
+    self.discountLabel.text = discountText;
+    
+    self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
+    self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
+    self.itemsQuantityLabel.text = [self.viewModel.itemsQuantity stringValue];
+    self.itemsLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[self.viewModel.order.items count]];
+    [super modelDidUpdateData];
+
+}
+
+- (void)modelDidRemoveItem:(NSInteger)itemOrder {
+    
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:itemOrder inSection:0];
+    NSArray* rowsToDelete = [NSArray arrayWithObjects:indexPath, nil];
+    [self.tableOrderDetail deleteRowsAtIndexPaths:rowsToDelete withRowAnimation:UITableViewRowAnimationRight];
+
+    NSString *discountText = [NSString stringWithFormat:@"(%.2f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
+    self.discountLabel.text = discountText;
+    
+    self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
+    self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
+    self.itemsQuantityLabel.text = [self.viewModel.itemsQuantity stringValue];
+    self.itemsLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[self.viewModel.order.items count]];
+
+    [super modelDidUpdateData];
+    
+}
+
+
+
 
 - (void)modelAddItemDidFail{
     NSString *message = [NSString stringWithFormat:@"No se pudo agregar el articulo verifique que la cantidad sea correcta multiplo de %@ y un minimo de %@",self.viewModel.articleSelected.multiploPedido, self.viewModel.articleSelected.minimoPedido];
@@ -443,6 +542,8 @@
 }
 
 - (void)articleUnavailable{
+    
+    [self hideQuantity];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"El articulo no esta disponible" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     
     [alert show];
@@ -498,9 +599,63 @@
 
 - (void)mailComposeController:(MFMailComposeViewController*)controller
           didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError*)error;
-{
+                        error:(NSError*)error {
     [controller dismissViewControllerAnimated:YES completion:nil];
 }
+
+
+//TESTPOL
+
+- (void)modelDidUpdateData:(NSInteger)level recalculate:(BOOL)recalculate {
+    
+    if (recalculate){
+        NSString *discountText = [NSString stringWithFormat:@"(%.0f%%) %@",[self.viewModel discountPercentage], [[NSNumber numberWithFloat:[self.viewModel discountValue]] currencyString]];
+        self.discountLabel.text = discountText;
+        self.subTotalLabel.text = [NSString stringWithFormat:@"%@",[[self.viewModel subTotal] currencyString]];
+        self.totalLabel.text = [NSString stringWithFormat:@"%@",[[NSNumber numberWithFloat:[self.viewModel total]] currencyString]];
+        CGFloat precio = [[self.viewModel.articleSelected priceForClient:self.viewModel.order.cliente] priceForClient:self.viewModel.order.cliente];
+        self.priceLabel.text = [NSString stringWithFormat:@"$ %.2f",precio];
+    
+    }
+    
+
+    if ([self.viewModel.order.observaciones length] > 0) {
+        self.observationTextView.text = self.viewModel.order.observaciones;
+    }
+
+    if (level == 0) {
+        NSIndexPath *table1IndexPath = self.viewModel.group1Selected != -1 ? [NSIndexPath indexPathForRow:self.viewModel.group1Selected inSection:0] : nil;
+
+        [self.tableGroup1 reloadData];
+        if (table1IndexPath) {
+            [self.tableGroup1 selectRowAtIndexPath:table1IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+        }
+    }
+    if (level <= 1) {
+        
+        NSIndexPath *table2IndexPath = self.viewModel.group2Selected != -1 ? [NSIndexPath indexPathForRow:self.viewModel.group2Selected inSection:0] : nil;
+
+        [self.tableGroup2 reloadData];
+        if (table2IndexPath) {
+            [self.tableGroup2 selectRowAtIndexPath:table2IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+        }
+    }
+    if (level <= 2) {
+        NSIndexPath *table3IndexPath = self.viewModel.articleSelected ? [NSIndexPath indexPathForRow:self.viewModel.articleSelectedIndex inSection:0] : nil;
+
+        [self.tableGroup3 reloadData];
+        if (table3IndexPath){
+            [self.tableGroup3 selectRowAtIndexPath:table3IndexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+        }
+        
+        [self loadQuantity];
+    }
+    
+//    [self.tableOrderDetail reloadData];
+    [super modelDidUpdateData];
+}
+
+
+
 
 @end

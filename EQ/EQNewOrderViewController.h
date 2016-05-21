@@ -14,6 +14,7 @@
 
 @interface EQNewOrderViewController : EQBaseViewController<EQNewOrderViewModelDelegate, UITableViewDelegate, UITableViewDataSource, EQTablePopoverDelegate, UIAlertViewDelegate, EQEditOrderDetailCellDelegate, EQProductDetailViewDelegate>
 
+
 @property (strong, nonatomic) IBOutletCollection(UISegmentedControl) NSArray *segmentedControls;
 @property (strong, nonatomic) IBOutlet UIButton *categoryButton;
 @property (strong, nonatomic) IBOutlet UITableView *tableGroup1;
@@ -31,7 +32,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *totalLabel;
 @property (strong, nonatomic) IBOutlet UILabel *subTotalLabel;
 @property (strong, nonatomic) IBOutlet UILabel *orderLabel;
-@property (strong, nonatomic) IBOutlet UILabel *dateLabel;
+//TESTPOL
+//@property (strong, nonatomic) IBOutlet UILabel *dateLabel;
 @property (strong, nonatomic) IBOutlet UILabel *orderClientLabel;
 @property (strong, nonatomic) IBOutlet UITextView *observationTextView;
 @property (strong, nonatomic) IBOutlet UISegmentedControl *segmentStatus;

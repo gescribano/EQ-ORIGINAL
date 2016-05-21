@@ -13,7 +13,7 @@
 @interface ItemPedido (extra)
 
 @property (nonatomic, strong) NSArray* articulos;
-@property (nonatomic, strong) NSArray* facturados;
+@property (nonatomic, strong) NSArray* itemsFacturados;
 
 - (CGFloat)totalConDescuento;
 - (CGFloat)totalSinDescuento;

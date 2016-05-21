@@ -2,11 +2,12 @@
 //  Cliente.m
 //  EQ
 //
-//  Created by Sebastian Borda on 9/18/13.
-//  Copyright (c) 2013 Sebastian Borda. All rights reserved.
+//  Created by Jonathan on 9/2/15.
+//  Copyright (c) 2015 Sebastian Borda. All rights reserved.
 //
 
 #import "Cliente.h"
+#import "Pedido.h"
 
 
 @implementation Cliente
@@ -17,6 +18,7 @@
 @dynamic codigo1;
 @dynamic codigo2;
 @dynamic codigoPostal;
+@dynamic conDescuento;
 @dynamic condicionDePagoID;
 @dynamic cuit;
 @dynamic descuento1;
@@ -47,6 +49,6 @@
 @dynamic vendedorID;
 @dynamic web;
 @dynamic zonaEnvioID;
-@dynamic conDescuento;
+@dynamic pedidos;
 
 @end

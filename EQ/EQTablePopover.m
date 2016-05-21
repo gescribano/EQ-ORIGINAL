@@ -86,10 +86,10 @@
     if ([self.data count] > 0) {
         NSString *selectedData = [self.data objectAtIndex:indexPath.row];
         if (selectedData) {
-            [self.delegate tablePopover:self selectedRow:indexPath.row selectedData:selectedData];
+            [self.delegate tablePopover:self selectedRow:(int)indexPath.row selectedData:selectedData];
         }
     } else {
-        [self.delegate tablePopover:self selectedRow:indexPath.row selectedData:nil];
+        [self.delegate tablePopover:self selectedRow:(int)indexPath.row selectedData:nil];
     }
 }
 

@@ -2,8 +2,8 @@
 //  Articulo.m
 //  EQ
 //
-//  Created by Sebastian Borda on 8/25/13.
-//  Copyright (c) 2013 Sebastian Borda. All rights reserved.
+//  Created by Jonathan on 9/23/15.
+//  Copyright (c) 2015 Sebastian Borda. All rights reserved.
 //
 
 #import "Articulo.h"
@@ -25,5 +25,6 @@
 @dynamic multiploPedido;
 @dynamic nombre;
 @dynamic tipo;
+@dynamic estado;
 
 @end

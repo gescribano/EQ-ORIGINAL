@@ -19,6 +19,7 @@
 }
 
 @property (nonatomic, strong) ALTabBarView *customTabBarView;
+@property (nonatomic) NSInteger customSelectedIndex;
 
 -(void) hideExistingTabBar;
 -(void) selectTabAtIndex:(int)index;

@@ -7,7 +7,9 @@
 //
 
 #import "Grupo+extra.h"
+#import "Articulo+extra.h"
 #import "EQDataAccessLayer.h"
+#import "Grupo+extra.h"
 
 @implementation Grupo (extra)
 
@@ -29,6 +31,25 @@
 
 - (NSString *)description{
     return [NSString stringWithFormat:@"Group id:%@ name:%@ parent:%@",self.identifier,self.nombre,self.parentID];
+}
+
+- (NSArray *)articulos
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"grupoID == %@ && (estado == 'publish' || estado == 'private')",self.identifier];
+    NSArray* articles = [[EQDataAccessLayer sharedInstance] objectListForClass:[Articulo class] filterByPredicate:predicate];
+    return articles;
+}
+
+- (NSArray *)parents
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier == %@",self.parentID];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:predicate];
+}
+
+- (NSArray *)subGrupos
+{
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"parentID == %@",self.identifier];
+    return [[EQDataAccessLayer sharedInstance] objectListForClass:[Grupo class] filterByPredicate:predicate];
 }
 
 @end

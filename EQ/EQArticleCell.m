@@ -10,4 +10,10 @@
 
 @implementation EQArticleCell
 
+
+- (void)prepareForReuse
+{
+    self.articleImage.image = [UIImage imageNamed:@"catalogoFotoProductoInexistente.png"];
+}
+
 @end

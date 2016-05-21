@@ -11,6 +11,6 @@
 
 @interface Usuario (extra)
 
-@property (nonatomic, strong) NSArray *comunicaciones;
+- (NSArray*) comunicaciones;
 
 @end

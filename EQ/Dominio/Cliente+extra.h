@@ -17,8 +17,11 @@
 
 @interface Cliente (extra)
 
++ (Cliente*) findById:(NSNumber *) clientId;
+
 @property (nonatomic,strong) NSArray *ventas;
 @property (nonatomic,strong) NSArray *condicionesDePago;
+@property (nonatomic,strong) NSArray *ctaCteList;
 @property (nonatomic,strong) NSArray *expresos;
 @property (nonatomic,strong) NSArray *lineasDeVenta;
 @property (nonatomic,strong) NSArray *ivas;
@@ -38,4 +41,5 @@
 - (Vendedor *)vendedor;
 - (Vendedor *)cobrador;
 - (void)calcularRelevancia;
+
 @end

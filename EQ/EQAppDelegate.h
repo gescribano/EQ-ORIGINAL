@@ -7,6 +7,7 @@
 //
 
 #import "ALTabBarController.h"
+#import "AFNetworking/AFHTTPClient.h"
 
 @interface EQAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>{
     
@@ -15,6 +16,7 @@
 @property (strong, nonatomic) IBOutlet UIWindow *window;
 @property (strong, nonatomic) IBOutlet ALTabBarController *tabBarController;
 @property (strong, nonatomic) UINavigationController *navigationController;
+@property (nonatomic, strong) AFHTTPClient* client;
 
 - (void)pushTabBarAtIndex:(int)index;
 - (void)selectTabAtIndex:(int)index;

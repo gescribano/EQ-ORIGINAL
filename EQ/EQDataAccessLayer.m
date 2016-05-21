@@ -29,9 +29,7 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[EQDataAccessLayer alloc] init];
-        sharedInstance.storeCoordinator = [sharedInstance persistentStoreCoordinator];
         sharedInstance.objectIDPredicate = [NSPredicate predicateWithFormat:@"identifier == $OBJECT_ID"];
-        [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(contextChanged:) name:NSManagedObjectContextDidSaveNotification object:nil];
     });
     return sharedInstance;
 }
@@ -39,33 +37,42 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
 #pragma mark - Core Data
 
 - (void)saveContext {
+    
     NSError *error = nil;
     NSManagedObjectContext *context = [self managedObjectContext];
     if (context != nil)
     {
-        if ([context hasChanges] && ![context save:&error])
-        {
-            NSLog(@"error: %@", error.userInfo);
+        if ([context hasChanges]) {
+            if (![context save:&error]) {
+                NSLog(@"error: %@", error.userInfo);
             /*
              Replace this implementation with code to handle the error appropriately.
              
              abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
              */
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
+//            abort();
+            }
         }
     }
 }
 
-- (NSArray *)objectListForClass:(Class)objectClass{
+
+- (NSArray *)objectListForClass:(Class)objectClass
+{
     return [self objectListForClass:objectClass filterByPredicate:nil sortBy:nil limit:0];
 }
 
-- (NSArray *)objectListForClass:(Class)objectClass filterByPredicate:(NSPredicate *)predicate{
+- (NSArray *)objectListForClass:(Class)objectClass filterByPredicate:(NSPredicate *)predicate
+{
     return [self objectListForClass:objectClass filterByPredicate:predicate sortBy:nil limit:0];
 }
 
-- (NSArray *)objectListForClass:(Class)objectClass filterByPredicate:(NSPredicate *)predicate sortBy:(NSSortDescriptor *)sortDescriptor limit:(int)limit {
+- (NSArray *)objectListForClass:(Class)objectClass
+              filterByPredicate:(NSPredicate *)predicate
+                         sortBy:(NSSortDescriptor *)sortDescriptor
+                          limit:(int)limit
+{
     NSString *className = NSStringFromClass(objectClass);
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:className];
     [fetchRequest setFetchLimit:limit];
@@ -79,13 +86,12 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
         NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES];
         [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sort]];
     }
-    
     NSArray *managedObjectList = [[self managedObjectContext] executeFetchRequest:fetchRequest error:nil];
     return managedObjectList;
 }
 
-
 - (id)objectForClass:(Class)objectClass withId:(NSString *)idValue{
+  
     if (idValue) {
         NSPredicate* localPredicate = [self.objectIDPredicate predicateWithSubstitutionVariables:@{@"OBJECT_ID":idValue}];
         NSManagedObject *object = [self objectForClass:objectClass withPredicate:localPredicate];
@@ -140,20 +146,19 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
  If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
  */
 - (NSManagedObjectContext *)managedObjectContext {
-    NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-    NSManagedObjectContext *threadContext = [threadDict objectForKey:kManagedObjectContextKey];
-    if (threadContext == nil && storeCoordinator != nil){
-        threadContext = [[NSManagedObjectContext alloc] init];
-        [threadContext setPersistentStoreCoordinator:storeCoordinator];
-        [threadContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
-        [threadDict setObject:threadContext forKey:kManagedObjectContextKey];
-        
-        if ([NSThread isMainThread]) {
-            self.mainManagedObjectContext = threadContext;
-        }
+    return self.mainManagedObjectContext;
+}
+
+- (NSManagedObjectContext *)mainManagedObjectContext
+{
+    if (!mainManagedObjectContext)
+    {
+        NSManagedObjectContext* context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        [context setPersistentStoreCoordinator:[self persistentStoreCoordinator]];
+        [context setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+        mainManagedObjectContext = context;
     }
-    
-    return threadContext;
+    return mainManagedObjectContext;
 }
 
 /**
@@ -171,6 +176,11 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
 }
 
 /**
+ *
+ */
+
+ 
+/**
  Returns the persistent store coordinator for the application.
  If the coordinator doesn't already exist, it is created and the application's store added to it.
  */
@@ -182,38 +192,54 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
     
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"model.sqlite"];
     
+    NSLog(@"DB LINK %@",storeURL);
+    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
+    
     NSError *error = nil;
     self.storeCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    if (![storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error])
+    if (![storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:@{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error])
     {
-        /*
-         Replace this implementation with code to handle the error appropriately.
-         
-         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. If it is not possible to recover from the error, display an alert panel that instructs the user to quit the application by pressing the Home button.
-         
-         Typical reasons for an error here include:
-         * The persistent store is not accessible;
-         * The schema for the persistent store is incompatible with current managed object model.
-         Check the error message to determine what the actual problem was.
-         
-         
-         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
-         
-         If you encounter schema incompatibility errors during development, you can reduce their frequency by:
-         * Simply deleting the existing store:
-         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
-         
-         * Performing automatic lightweight migration by passing the following dictionary as the options parameter:
-         [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption, [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
-         
-         Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
-         
-         */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
+        //REMOVE USER PREFERENCES
+        NSError *error;
+        for (NSPersistentStore *store in storeCoordinator.persistentStores) {
+            BOOL removed = [storeCoordinator removePersistentStore:store error:&error];
+            if (!removed) {
+                NSLog(@"Unable to remove persistent store: %@", error);
+            }
+        }
+        [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:nil];
+        if (![storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:@{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error]) {
+            // Report any error we got.
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
+            dict[NSLocalizedFailureReasonErrorKey] = failureReason;
+            dict[NSUnderlyingErrorKey] = error;
+            error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
+            // Replace this with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            
+            abort();
+        }
     }
     
     return storeCoordinator;
+}
+
+- (void) resetUserDatabase
+{
+    NSError *error;
+    for (NSPersistentStore *store in storeCoordinator.persistentStores) {
+        BOOL removed = [storeCoordinator removePersistentStore:store error:&error];
+        if (!removed) {
+            NSLog(@"Unable to remove persistent store: %@", error);
+        }
+    }
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"model.sqlite"];
+    [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:nil];
+    storeCoordinator = nil;
+    self.managedObjectModel = nil;
+    self.mainManagedObjectContext = nil;
 }
 
 #pragma mark Application's Documents directory
@@ -223,15 +249,6 @@ static NSString const * kManagedObjectContextKey = @"EQ_NSManagedObjectContextFo
  */
 - (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-}
-
-// FIX: you must mergeChangesFromContextDidSaveNotification: on main thread
-// handling the notification occurs on background thread.
-// it needs to "merge" on the main thread.
-- (void)contextChanged:(NSNotification *)didSaveNotification {
-        if ([didSaveNotification object] != self.mainManagedObjectContext)
-            [self.mainManagedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
-                                                            withObject:didSaveNotification waitUntilDone:NO];
 }
 
 @end

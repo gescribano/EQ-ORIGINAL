@@ -29,36 +29,34 @@
 {
     self = [super init];
     if (self) {
-        self.selectedTaxAtIndex = NSNotFound;
-        self.selectedProvinceAtIndex = NSNotFound;
-        self.selectedPaymentConditionAtIndex = NSNotFound;
-        self.selectedCollectorAtIndex = NSNotFound;
-        self.selectedSellerAtIndex = NSNotFound;
-        self.selectedSalesLineAtIndex = NSNotFound;
-        self.selectedDeliveryAreaAtIndex = NSNotFound;
-        self.selectedExpressAtIndex = NSNotFound;
+        self.selectedTaxAtIndex = -1;
+        self.selectedProvinceAtIndex = -1;
+        self.selectedPaymentConditionAtIndex = -1;
+        self.selectedCollectorAtIndex = -1;
+        self.selectedSellerAtIndex = -1;
+        self.selectedSalesLineAtIndex = -1;
+        self.selectedDeliveryAreaAtIndex = -1;
+        self.selectedExpressAtIndex = -1;
     }
     return self;
 }
 
 - (void)loadData{
-    if (self.clientID) {
-        self.client = (Cliente *)[[EQDataAccessLayer sharedInstance] objectForClass:[Cliente class] withId:self.clientID];
-        self.selectedTaxAtIndex = [[self obtainTaxesList] indexOfObject:self.client.iva];
-        self.selectedProvinceAtIndex = [[self obtainProvinces] indexOfObject:self.client.provincia];
-        self.selectedPaymentConditionAtIndex = [[self obtainPaymentConditionList] indexOfObject:self.client.condicionDePago];
-        self.selectedExpressAtIndex = [[self obtainExpressList] indexOfObject:self.client.expreso];
-        self.selectedDeliveryAreaAtIndex = [[self obtainDeliveryAreaList] indexOfObject:self.client.zonaEnvio];
-        self.selectedSalesLineAtIndex = [[self obtainSalesLineList] indexOfObject:self.client.lineaDeVenta];
+    if (self.client) {
+        self.selectedTaxAtIndex = (int)[[self obtainTaxesList] indexOfObject:self.client.iva];
+        self.selectedProvinceAtIndex = (int)[[self obtainProvinces] indexOfObject:self.client.provincia];
+        self.selectedPaymentConditionAtIndex = (int)[[self obtainPaymentConditionList] indexOfObject:self.client.condicionDePago];
+        self.selectedExpressAtIndex = (int)[[self obtainExpressList] indexOfObject:self.client.expreso];
+        self.selectedDeliveryAreaAtIndex = (int)[[self obtainDeliveryAreaList] indexOfObject:self.client.zonaEnvio];
+        self.selectedSalesLineAtIndex = (int)[[self obtainSalesLineList] indexOfObject:self.client.lineaDeVenta];
         self.hasDiscount = [self.client.conDescuento boolValue];
     }
     
 }
 
 - (void)saveClient:(NSDictionary *)clientDictionary{
-    if (self.clientID) {
-        self.client = (Cliente *)[[EQDataAccessLayer sharedInstance] objectForClass:[Cliente class] withId:self.clientID];
-    } else {
+    if (!self.client)
+    {
         self.client = (Cliente *)[[EQDataAccessLayer sharedInstance] createManagedObject:NSStringFromClass([Cliente class])];
     }
     
@@ -85,34 +83,52 @@
     self.client.web = clientDictionary[@"web"];
     self.client.activo = [NSNumber numberWithBool:YES];
     self.client.conDescuento = [NSNumber numberWithBool:self.hasDiscount];
-    if (self.selectedCollectorAtIndex != NSNotFound )
+    
+    if (self.selectedCollectorAtIndex != -1 )
         self.client.cobradorID = ((Vendedor *)[self obtainCollectorList][self.selectedCollectorAtIndex]).identifier;
     else
         self.client.cobradorID = [EQSession sharedInstance].user.vendedorID;
-    if (self.selectedPaymentConditionAtIndex != NSNotFound  )
+    if (self.selectedPaymentConditionAtIndex != -1 )
         self.client.condicionDePagoID = ((CondPag *)[self obtainPaymentConditionList][self.selectedPaymentConditionAtIndex]).identifier;
-    if (self.selectedExpressAtIndex != NSNotFound  )
+    if (self.selectedExpressAtIndex != -1  )
         self.client.expresoID = ((Expreso *)[self obtainExpressList][self.selectedExpressAtIndex]).identifier;
-    if (self.selectedTaxAtIndex != NSNotFound  )
+    if (self.selectedTaxAtIndex != -1  )
         self.client.ivaID = ((TipoIvas *)[self obtainTaxesList][self.selectedTaxAtIndex]).identifier;
-    if (self.selectedSalesLineAtIndex != NSNotFound  )
+    if (self.selectedSalesLineAtIndex != -1  )
         self.client.lineaDeVentaID = ((LineaVTA *)[self obtainSalesLineList][self.selectedSalesLineAtIndex]).identifier;
-    if (self.selectedSellerAtIndex != NSNotFound  )
+    if (self.selectedSellerAtIndex != -1  )
         self.client.vendedorID = ((Vendedor *)[self obtainSellersList][self.selectedSellerAtIndex]).identifier;
     else
         self.client.vendedorID = [EQSession sharedInstance].user.vendedorID;
-    if (self.selectedProvinceAtIndex != NSNotFound  )
+    if (self.selectedProvinceAtIndex != -1  )
         self.client.provinciaID = ((Provincia *)[self obtainProvinces][self.selectedProvinceAtIndex]).identifier;
-    if (self.selectedDeliveryAreaAtIndex != NSNotFound  )
+    if (self.selectedDeliveryAreaAtIndex != -1  )
         self.client.zonaEnvioID = ((ZonaEnvio *)[self obtainDeliveryAreaList][self.selectedDeliveryAreaAtIndex]).identifier;
     
     self.client.listaPrecios = [EQSession sharedInstance].settings.defaultPriceList;
     
     self.client.actualizado = [NSNumber numberWithBool:NO];
-    [[EQDataAccessLayer sharedInstance] saveContext];
+    
+    NSError*error;
+    [self.client.managedObjectContext save:&error];
+    
+    if (error)
+    {
+        NSLog(@"ERROR GUARDANDO CLIENTE %@",error);
+    }
+    
     [[EQSession sharedInstance] updateCache];
     
-    [[EQDataManager sharedInstance] sendClient:self.client];
+    [[EQDataManager sharedInstance] sendClient:self.client
+                                       success:^
+     {
+         
+     }
+                                       failure:^(NSError *error)
+     {
+         
+     }];
+    
     [EQSession sharedInstance].selectedClient = self.client;
 }
 
@@ -164,7 +180,8 @@
     self.selectedPaymentConditionAtIndex = index;
 }
 
-- (void)selectedCollectorAtIndex:(int)index{
+- (void)selectedCollectorAtIndex:(int)index
+{
     self.selectedCollectorAtIndex = index;
 }
 

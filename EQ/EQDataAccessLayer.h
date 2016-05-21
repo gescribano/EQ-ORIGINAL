@@ -23,5 +23,6 @@
 - (id)createManagedObject:(NSString*)kind;
 - (id)createManagedObjectWithEntity:(NSEntityDescription*)entityDescription;
 - (NSManagedObjectContext *)managedObjectContext;
+- (void) resetUserDatabase;
 
 @end

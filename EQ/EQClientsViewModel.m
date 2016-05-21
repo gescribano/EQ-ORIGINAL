@@ -83,13 +83,13 @@
     self.searchTerm = term;
 }
 
-- (Cliente *)clientById:(NSString*)clientId{
-    for (Cliente *cliente in self.clients) {
-        if ([cliente.identifier isEqualToString:clientId]) {
-            return cliente;
-        }
-    }
-    return nil;
-}
+//- (Cliente *)clientById:(NSString*)clientId{
+//    for (Cliente *cliente in self.clients) {
+//        if ([cliente.identifier isEqualToString:clientId]) {
+//            return cliente;
+//        }
+//    }
+//    return nil;
+//}
 
 @end

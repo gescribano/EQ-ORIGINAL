@@ -43,7 +43,7 @@
 }
 
 - (void)activeClientChange:(NSNotification *)notification{
-     Cliente *activeCliente = notification.userInfo[@"activeClient"];
+    Cliente *activeCliente = notification.userInfo[@"activeClient"];
     self.clientName = activeCliente.nombre;
     if ([APP_DELEGATE tabBarController].selectedIndex == EQTabIndexOrders) {
         [self loadData];
@@ -157,7 +157,14 @@
 - (void)cancelOrder:(Pedido *)order {
     order.estado = @"anulado";
     [[EQDataAccessLayer sharedInstance] saveContext];
-    [[EQDataManager sharedInstance] sendOrder:order];
+    [[EQDataManager sharedInstance] sendOrder:order success:^
+     {
+         
+     }
+                                      failure:^(NSError *error)
+     {
+         
+     }];
 }
 
 - (void)changeSortOrder:(int)index{

@@ -15,11 +15,11 @@
 }
 
 - (IBAction)editButtonAction:(id)sender {
-    [self.delegate editClientWithID:self.clientID];
+    [self.delegate editClient:self.client];
 }
 
 - (IBAction)mailButtonAction:(id)sender {
-    [self.delegate mailToClientWithID:self.clientID];
+    [self.delegate mailToClient:self.client];
 }
 
 @end

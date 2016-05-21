@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+#define kPriceList @"PriceList"
+#define kEnviroment @"Enviroment"
+
 @interface EQSettings : NSObject
 
 @property (nonatomic,strong) NSString *defaultPriceList;

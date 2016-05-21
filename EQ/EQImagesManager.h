@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+#define IMAGE_DOWNLOAD_PROGRESS @"DOWNLOAD_PROGRESS_IMAGES"
+#define CATALOG_DOWNLOAD_PROGRESS @"DOWNLOAD_PROGRESS_CATALOG"
+
 extern NSString * const CACHE_DIRECTORY_FORMAT;
 
 @interface EQImagesManager : UIImageView
@@ -17,6 +20,5 @@ extern NSString * const CACHE_DIRECTORY_FORMAT;
 - (BOOL)saveImage:(UIImage *)image named:(NSString *)name;
 - (BOOL)existImageNamed:(NSString *)name;
 - (UIImage *)imageNamed:(NSString *)name;
-- (void)clearCache;
 
 @end
